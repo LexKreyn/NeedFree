@@ -30,7 +30,7 @@ def fetch_Steam_json_response(url):
             continue
 
 def get_free_goods(start, append_list = False):
-    ''' Extract 100%-discount goods list in a list of 100 products
+    ''' Extract discount goods list in a list of 100 products
     start:          start page index
     append_list:    if to append new found free goods to final list
 
@@ -46,17 +46,20 @@ def get_free_goods(start, append_list = False):
             goods_count = response_json["total_count"]
             goods_html = response_json["results_html"]
             page_parser = bs4.BeautifulSoup(goods_html, "html.parser")
-            full_discounts_div = page_parser.find_all(name = "div", attrs = {"class":"search_discount_block", "data-discount":"100"})
+            full_discounts_div = page_parser.find_all(name = "div", attrs = {"class":"search_discount_block"})
             sub_free_list = [
                 [
-                    div.parent.parent.parent.parent.find(name = "span", attrs = {"class":"title"}).get_text(),
+                    div.parent.parent.parent.parent.find(name="div", attrs={"class": "search_discount_block"}).get('data-discount'),
+                    div.parent.parent.parent.parent.find(name="span", attrs={"class": "title"}).get_text(),
                     div.parent.parent.parent.parent.get("href"),
                 ] for div in full_discounts_div
             ]
 
             if append_list:
                 for sub_free in sub_free_list:
-                    free_list.put(sub_free)
+                    if sub_free[0] and sub_free[0] != '0':
+                        sub_free[0] = int(sub_free[0])
+                        free_list.put(sub_free)
 
             return goods_count
         except Exception as e:
@@ -86,6 +89,8 @@ while not free_list.empty():
     if game_name not in free_names:
         free_names.add(game_name)
         final_free_list.append(free_item)
+
+final_free_list = sorted_data = sorted(final_free_list, key=lambda x: (-x[0], x[1]))
 
 with open("free_goods_detail.json", "w") as fp:
     json.dump({
