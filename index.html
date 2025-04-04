@@ -1,67 +1,142 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-		<title>100%-DISCOUNT</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	</head>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-	<body>
-		<div class="container">
-			<ul class="breadcrumb">
-				<li>Total Count:&nbsp;</li>
-				<li id="totalcount"></li>
-			</ul>
-			<div class="row">
-				<div class="col-md-12">
-					<ul class="breadcrumb">
-						<li >100%-Discount list:</li>
-					</ul>
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>Game</th>
-								<th>URL</th>
-							</tr>
-						</thead>
-						<tbody id="listcontent">
-						</tbody>
-						<tfoot>
-							<tr>
-								<td colspan="2" style="text-align: center;">Latest Updated (UTC+3): <span id="uptime" style="color: red;"></span></td>
-							</tr>
-						</tfoot>
-					</table>
-					
-					<a class="nav-link" href="https://github.com/LexKreyn/NeedFree" style="text-align: center;">
-						<span class="d-none d-sm-inline" style="text-decoration: none;color: darkslategray;">View on GitHub </span>
-						<svg version="1.1" width="16" height="16" viewBox="0 0 16 16" class="octicon octicon-mark-github" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>
-					</a>
-					</div>
-				</div>
-			</div>
-		</div>
-		<script>
-			function showlist()
-			{
-				$.ajax({
-					type: "get",
-					url: "./free_goods_detail.json",
-					success: function(data){
-						$('#totalcount').text(data["total_count"]);
-						$('#uptime').text(data["update_time"]);
-						for (var i = 0; i < data["free_list"].length; ++i)
-						{
-							$('#listcontent').append("<tr class='table-success'><td>" + data["free_list"][i][0] + "</td>" + 
-								"<td><a href='" + data["free_list"][i][1] + "' style='text-decoration: none;' class='btn btn-primary'>Shop</a></td></tr>");
-						}
-					}
-				});
-			}
-			
-			$(document).ready(showlist);
-		</script>
-	</body>
+<head>
+    <meta charset="UTF-8">
+    <title>Steam Discounts</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        .table-dark {
+            background-color: #2d2d2d;
+        }
+        
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #3d3d3d;
+        }
+        
+        .discount-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            background-size: 200% 100%;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+        
+        .discount-badge::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+            background: linear-gradient(
+                90deg,
+                rgba(0,0,0,0.3) 0%,
+                rgba(0,0,0,0.1) 50%,
+                rgba(0,0,0,0.3) 100%
+            );
+        }
+        
+        .discount-text {
+            position: relative;
+            z-index: 2;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .github-link {
+            color: #58a6ff !important;
+        }
+
+        .game-name {
+        	position: relative;
+        	text-align: center;
+        	color: black;
+        	font-size: 24px;
+        	margin: 5px;
+        }
+    </style>
+</head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+<body style="background-color: #1a1a1a; color: white;">
+    <div class="container">
+        <ul class="breadcrumb bg-dark">
+            <li class="text-light">Total Count:&nbsp;</li>
+            <li class="text-light" id="totalcount"></li>
+        </ul>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped table-dark">
+                    <thead>
+                        <tr>
+                            <th>Game</th>
+                            <th>URL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listcontent">
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2" style="text-align: center;">Latest Updated (UTC+3): <span id="uptime" style="color: #ff6666;"></span></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+                <a class="nav-link github-link" href="https://github.com/LexKreyn/NeedFree" style="text-align: center;">
+                    <span class="d-none d-sm-inline" style="text-decoration: none;">View on GitHub </span>
+                    <svg version="1.1" width="16" height="16" viewBox="0 0 16 16" class="octicon octicon-mark-github" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>
+                </a>
+            </div>
+        </div>
+    </div>
+    <script>
+        function getColor(percent) {
+            percent = Math.max(1, Math.min(100, percent));
+
+            const normalized = (percent - 1) / 99;
+
+            let red, green;
+
+            if (normalized < 0.5) {
+                red = 255;
+                green = Math.round(255 * (normalized * 2));
+            } else {
+                red = Math.round(255 * (1 - (normalized - 0.5) * 2));
+                green = 255;
+            }
+
+            const color = `#${red.toString(16).padStart(2, '0')}${green.toString(16).padStart(2, '0')}00`;
+            return color;
+        }
+        function showlist() {
+            $.ajax({
+                type: "get",
+                url: "./free_goods_detail.json",
+                success: function(data) {
+                    $('#totalcount').text(data["total_count"]);
+                    $('#uptime').text(data["update_time"]);
+                    for (var i = 0; i < data["free_list"].length; ++i) {
+                        var discount = data["free_list"][i][0];
+                        var gradientPosition = (discount / 100) * 100;
+                        
+                        $('#listcontent').append(
+                            "<tr class='table-success'>" +
+                            "<td style=\"display: flex; align-items: center; background: linear-gradient(90deg, " + getColor(discount) + " 0%, #484e53 100%); border: 2px solid #343a40; color: black; font-size: 16px\"><div class='discount-badge'><span class='discount-text'>" + discount + "%</span></div> <p class='game-name'>" + data["free_list"][i][1] + "</p></td>" +
+                            "<td style=\"background-color: #484e53; border: 2px solid #343a40; width: 100px\"><a href='" + data["free_list"][i][2] + "' style='text-decoration: none; background-color: #171a21; border: 1px solid black' class='btn btn-primary'><img src=\"https://store.fastly.steamstatic.com/public/images/v6/logo_steam_footer.png\"></img></a></td>" +
+                            "</tr>"
+                        );
+                    }
+                }
+            });
+        }
+        
+        $(document).ready(showlist);
+    </script>
+</body>
 </html>
