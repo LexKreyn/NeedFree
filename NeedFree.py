@@ -50,15 +50,21 @@ def get_free_goods(start, append_list = False):
             sub_free_list = [
                 [
                     div.parent.parent.parent.parent.find(name="div", attrs={"class": "search_discount_block"}).get('data-discount'),
+                    div.parent.parent.parent.parent.find(name="div", attrs={"class": "discount_original_price"}),
+                    div.parent.parent.parent.parent.find(name="div", attrs={"class": "discount_final_price"}).get_text(),
                     div.parent.parent.parent.parent.find(name="span", attrs={"class": "title"}).get_text(),
                     div.parent.parent.parent.parent.get("href"),
+                    div.parent.parent.parent.parent.find_all("div")[0].find("img").get("src")
                 ] for div in full_discounts_div
             ]
 
             if append_list:
                 for sub_free in sub_free_list:
                     if sub_free[0] and sub_free[0] != '0':
+                        if sub_free[1]:
+                            sub_free[1] = sub_free[1].get_text()
                         sub_free[0] = int(sub_free[0])
+                        print(sub_free)
                         free_list.put(sub_free)
 
             return goods_count
@@ -92,7 +98,7 @@ while not free_list.empty():
 
 final_free_list = sorted_data = sorted(final_free_list, key=lambda x: (-x[0], x[1]))
 
-with open("free_goods_detail.json", "w") as fp:
+with open("free_goods_detail.json", "w", encoding="utf-8") as fp:
     json.dump({
         "total_count": len(final_free_list),
         "free_list": final_free_list,
