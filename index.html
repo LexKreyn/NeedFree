@@ -39,7 +39,7 @@
                 rgba(0,0,0,0.3) 100%
             );
         }
-        
+
         .discount-text {
             position: relative;
             z-index: 2;
@@ -59,6 +59,27 @@
         	font-size: 24px;
         	margin: 5px;
         }
+
+        .game-row {
+        	gap: 12px;
+        	display: flex;
+        	flex-direction: column;
+        	align-items: flex-start;
+			border: 2px solid #1a1a1a;
+			color: black;
+			font-size: 16px;
+        }
+
+        .game-image {
+        	width: 120px;
+        	height: 45px;
+        	border-radius: 5px;
+        }
+
+        tr:hover {
+            background-color: #454d55 !important;
+            cursor: pointer;
+        }
     </style>
 </head>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -76,7 +97,6 @@
                     <thead>
                         <tr>
                             <th>Game</th>
-                            <th>URL</th>
                         </tr>
                     </thead>
                     <tbody id="listcontent">
@@ -122,15 +142,26 @@
                     $('#totalcount').text(data["total_count"]);
                     $('#uptime').text(data["update_time"]);
                     for (var i = 0; i < data["free_list"].length; ++i) {
-                        var discount = data["free_list"][i][0];
-                        var gradientPosition = (discount / 100) * 100;
-                        
-                        $('#listcontent').append(
-                            "<tr class='table-success'>" +
-                            "<td style=\"display: flex; align-items: center; background: linear-gradient(90deg, " + getColor(discount) + " 0%, #484e53 100%); border: 2px solid #343a40; color: black; font-size: 16px\"><div class='discount-badge'><span class='discount-text'>" + discount + "%</span></div> <p class='game-name'>" + data["free_list"][i][1] + "</p></td>" +
-                            "<td style=\"background-color: #484e53; border: 2px solid #343a40; width: 100px\"><a href='" + data["free_list"][i][2] + "' style='text-decoration: none; background-color: #171a21; border: 1px solid black' class='btn btn-primary'><img src=\"https://store.fastly.steamstatic.com/public/images/v6/logo_steam_footer.png\"></img></a></td>" +
-                            "</tr>"
-                        );
+                    	var [discount, originalPrice, discountPrice, gameName, gameLink, gameImage] = data["free_list"][i];
+
+                		$('#listcontent').append(`
+                			<tr class="table-success">
+                				<td class="game-row" onclick="window.location.replace('${gameLink}');" style="background: linear-gradient(90deg, ${getColor(discount)} 0%, #1a1a1a 100%); border-color: #1a1a1a">
+                					<div style="display: flex; align-items: center; gap: 12px;">
+	                					<div>
+	                						<img class="game-image" src="${gameImage}"></img>
+	            						</div>
+	            						<div class="discount-badge">
+	            							<span class="discount-text">${discount}%</span>
+	        							</div>
+	            						<div class="discount-badge">
+	            							<span class="discount-text">${originalPrice} → ${discountPrice}</span>
+	        							</div>
+	        						</div>
+        							<p class="game-name">${gameName}</p>
+                				</td>
+                			</tr>
+            			`);
                     }
                 }
             });
