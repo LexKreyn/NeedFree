@@ -53,27 +53,27 @@
         }
 
         .game-name {
-        	position: relative;
-        	text-align: center;
-        	color: black;
-        	font-size: 24px;
-        	margin: 5px;
+            position: relative;
+            text-align: center;
+            color: black;
+            font-size: 24px;
+            margin: 5px;
         }
 
         .game-row {
-        	gap: 12px;
-        	display: flex;
-        	flex-direction: column;
-        	align-items: flex-start;
-			border: 2px solid #1a1a1a;
-			color: black;
-			font-size: 16px;
+            gap: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            border: 2px solid #1a1a1a;
+            color: black;
+            font-size: 16px;
         }
 
         .game-image {
-        	width: 120px;
-        	height: 45px;
-        	border-radius: 5px;
+            width: 120px;
+            height: 45px;
+            border-radius: 5px;
         }
 
         tr:hover {
@@ -142,26 +142,26 @@
                     $('#totalcount').text(data["total_count"]);
                     $('#uptime').text(data["update_time"]);
                     for (var i = 0; i < data["free_list"].length; ++i) {
-                    	var [discount, originalPrice, discountPrice, gameName, gameLink, gameImage] = data["free_list"][i];
+                        var [discount, originalPrice, discountPrice, gameName, gameLink, gameImage] = data["free_list"][i];
 
-                		$('#listcontent').append(`
-                			<tr class="table-success">
-                				<td class="game-row" onclick="window.location.replace('${gameLink}');" style="background: linear-gradient(90deg, ${getColor(discount)} 0%, #1a1a1a 100%); border-color: #1a1a1a">
-                					<div style="display: flex; align-items: center; gap: 12px;">
-	                					<div>
-	                						<img class="game-image" src="${gameImage}"></img>
-	            						</div>
-	            						<div class="discount-badge">
-	            							<span class="discount-text">${discount}%</span>
-	        							</div>
-	            						<div class="discount-badge">
-	            							<span class="discount-text">${originalPrice} → ${discountPrice}</span>
-	        							</div>
-	        						</div>
-        							<p class="game-name">${gameName}</p>
-                				</td>
-                			</tr>
-            			`);
+                        $('#listcontent').append(`
+                            <tr class="table-success">
+                                <td class="game-row" onclick="window.open('${gameLink}', '_blank').focus();" style="background: linear-gradient(90deg, ${getColor(discount)} 0%, #1a1a1a 100%); border-color: #1a1a1a">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div>
+                                            <img class="game-image" src="${gameImage}"></img>
+                                        </div>
+                                        <div class="discount-badge">
+                                            <span class="discount-text">${discount}%</span>
+                                        </div>
+                                        <div class="discount-badge">
+                                            <span class="discount-text">${originalPrice} → ${discountPrice}</span>
+                                        </div>
+                                    </div>
+                                    <p class="game-name">${gameName}</p>
+                                </td>
+                            </tr>
+                        `);
                     }
                 }
             });
