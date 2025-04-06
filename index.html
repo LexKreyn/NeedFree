@@ -142,7 +142,7 @@
                     $('#totalcount').text(data["total_count"]);
                     $('#uptime').text(data["update_time"]);
                     for (var i = 0; i < data["free_list"].length; ++i) {
-                        var [discount, originalPrice, discountPrice, gameName, gameLink, gameImage] = data["free_list"][i];
+                        var [regionISO, discount, originalPrice, discountPrice, gameName, gameLink, gameImage] = data["free_list"][i];
 
                         $('#listcontent').append(`
                             <tr class="table-success">
@@ -155,7 +155,7 @@
                                             <span class="discount-text">-${discount}%</span>
                                         </div>
                                         <div class="discount-badge">
-                                            <span class="discount-text">${originalPrice} → ${discountPrice}</span>
+                                            <span class="discount-text">${regionISO}: ${originalPrice} → ${discountPrice}</span>
                                         </div>
                                     </div>
                                     <p class="game-name">${gameName}</p>
