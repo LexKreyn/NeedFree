@@ -4,15 +4,29 @@
     <meta charset="UTF-8">
     <title>Steam Discounts</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css" rel="stylesheet">
     <style>
+        :root {
+            --accent-color: #58a6ff;
+            --background-dark: #1a1a1a;
+            --background-medium: #2d2d2d;
+            --background-light: #3d3d3d;
+        }
+
+        body {
+            background-color: var(--background-dark);
+            color: white;
+        }
+
         .table-dark {
-            background-color: #2d2d2d;
+            background-color: var(--background-medium);
         }
-        
+
         .table-striped tbody tr:nth-of-type(odd) {
-            background-color: #3d3d3d;
+            background-color: var(--background-light);
         }
-        
+
         .discount-badge {
             display: inline-block;
             padding: 5px 15px;
@@ -23,7 +37,7 @@
             border: 2px solid transparent;
             background-clip: padding-box;
         }
-        
+
         .discount-badge::before {
             content: '';
             position: absolute;
@@ -48,12 +62,7 @@
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
 
-        .github-link {
-            color: #58a6ff !important;
-        }
-
         .game-name {
-            position: relative;
             text-align: center;
             color: black;
             font-size: 24px;
@@ -65,8 +74,7 @@
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            border: 2px solid #1a1a1a;
-            color: black;
+            border: 2px solid var(--background-dark);
             font-size: 16px;
         }
 
@@ -80,94 +88,285 @@
             background-color: #454d55 !important;
             cursor: pointer;
         }
+
+        .form-control {
+            background-color: var(--background-medium);
+            color: white;
+            border: 1px solid var(--background-light);
+        }
+
+        .form-control:focus {
+            background-color: var(--background-medium);
+            color: white;
+            border-color: var(--accent-color);
+            box-shadow: none;
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .slider-input {
+            width: 80px;
+            flex-shrink: 0;
+        }
+
+        .noUi-target {
+            background: #454d55;
+            border-radius: 3px;
+            border: 1px solid var(--accent-color);
+            height: 6px;
+            flex-grow: 1;
+        }
+
+        .noUi-connect {
+            background: var(--accent-color);
+        }
+
+        .noUi-handle {
+            width: 18px !important;
+            height: 18px !important;
+            right: -9px !important;
+            top: -7px !important;
+            border-radius: 50%;
+            background: var(--background-medium);
+            border: 2px solid var(--accent-color);
+            cursor: pointer;
+            box-shadow: none;
+        }
+
+        .github-link {
+            color: var(--accent-color) !important;
+            text-decoration: none !important;
+        }
+
+        .github-link:hover {
+            opacity: 0.8;
+        }
+
+        .noUi-handle:after, .noUi-handle:before {
+            content: none;
+        }
     </style>
 </head>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
-<body style="background-color: #1a1a1a; color: white;">
+<body>
     <div class="container">
-        <ul class="breadcrumb bg-dark">
-            <li class="text-light">Total Count:&nbsp;</li>
-            <li class="text-light" id="totalcount"></li>
-        </ul>
-        <div class="row">
-            <div class="col-md-12">
-                <table class="table table-striped table-dark">
-                    <thead>
-                        <tr>
-                            <th>Game</th>
-                        </tr>
-                    </thead>
-                    <tbody id="listcontent">
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="2" style="text-align: center;">Latest Updated (UTC+3): <span id="uptime" style="color: #ff6666;"></span></td>
-                        </tr>
-                    </tfoot>
-                </table>
-                
-                <a class="nav-link github-link" href="https://github.com/LexKreyn/NeedFree" style="text-align: center;">
-                    <span class="d-none d-sm-inline" style="text-decoration: none;">View on GitHub </span>
-                    <svg version="1.1" width="16" height="16" viewBox="0 0 16 16" class="octicon octicon-mark-github" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>
+        <div class="my-4">
+            <div class="d-flex align-items-center mb-3">
+                <span class="mr-2">Total Count:</span>
+                <span id="totalcount" class="badge badge-secondary"></span>
+            </div>
+
+            <div class="filter-container">
+                <div class="filter-group">
+                    <input type="text" class="form-control" 
+                           id="nameFilter" placeholder="Search game...">
+                </div>
+
+                <div class="filter-group">
+                    <div class="slider-group">
+                        <input type="number" class="form-control slider-input" 
+                               id="minDiscount" placeholder="Min%">
+                        <div id="discountSlider" style="flex-grow:1;"></div>
+                        <input type="number" class="form-control slider-input" 
+                               id="maxDiscount" placeholder="Max%">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="slider-group">
+                        <input type="number" class="form-control slider-input" 
+                               id="minPrice" placeholder="Min$">
+                        <div id="priceSlider" style="flex-grow:1;"></div>
+                        <input type="number" class="form-control slider-input" 
+                               id="maxPrice" placeholder="Max$">
+                    </div>
+                </div>
+            </div>
+
+            <table class="table table-striped table-dark">
+                <tbody id="listcontent"></tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2" class="text-center">
+                            Latest Updated (UTC+3): <span id="uptime" style="color: #ff6666;"></span>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div class="text-center my-4">
+                <a href="https://github.com/LexKreyn/NeedFree" 
+                   class="github-link" 
+                   target="_blank">
+                    <svg version="1.1" width="24" height="24" viewBox="0 0 16 16" 
+                         class="octicon octicon-mark-github" aria-hidden="true">
+                        <path fill="currentColor" fill-rule="evenodd" 
+                              d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
+                    <span class="ml-2">View on GitHub</span>
                 </a>
             </div>
         </div>
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
+        let allGames = [];
+        let discountSlider, priceSlider;
+        let filterTimeout;
+        const DEBOUNCE_DELAY = 500;
+
         function getColor(percent) {
             percent = Math.max(1, Math.min(100, percent));
-
-            const normalized = (percent - 1) / 99;
-
-            let red, green;
-
-            if (normalized < 0.5) {
-                red = 255;
-                green = Math.round(255 * (normalized * 2));
-            } else {
-                red = Math.round(255 * (1 - (normalized - 0.5) * 2));
-                green = 255;
-            }
-
-            const color = `#${red.toString(16).padStart(2, '0')}${green.toString(16).padStart(2, '0')}00`;
-            return color;
+            const hue = ((100 - percent) * 120 / 100).toString(10);
+            return `hsl(${hue}, 100%, 45%)`;
         }
-        function showlist() {
-            $.ajax({
-                type: "get",
-                url: "./free_goods_detail.json",
-                success: function(data) {
-                    $('#totalcount').text(data["total_count"]);
-                    $('#uptime').text(data["update_time"]);
-                    for (var i = 0; i < data["free_list"].length; ++i) {
-                        var [discount, originalPrice, discountPrice, gameName, gameLink, gameImage] = data["free_list"][i];
 
-                        $('#listcontent').append(`
-                            <tr class="table-success">
-                                <td class="game-row" onclick="window.open('${gameLink}', '_blank').focus();" style="background: linear-gradient(90deg, ${getColor(discount)} 0%, #1a1a1a 100%); border-color: #1a1a1a">
-                                    <div style="display: flex; align-items: center; gap: 12px;">
-                                        <div>
-                                            <img class="game-image" src="${gameImage}"></img>
-                                        </div>
-                                        <div class="discount-badge">
-                                            <span class="discount-text">-${discount}%</span>
-                                        </div>
-                                        <div class="discount-badge">
-                                            <span class="discount-text">US: ${originalPrice} → ${discountPrice}</span>
-                                        </div>
-                                    </div>
-                                    <p class="game-name">${gameName}</p>
-                                </td>
-                            </tr>
-                        `);
-                    }
+        function renderGames(games) {
+            const fragment = document.createDocumentFragment();
+            
+            games.forEach(game => {
+                const tr = document.createElement('tr');
+                tr.className = 'table-success';
+                tr.innerHTML = `
+                    <td class="game-row" 
+                        style="background: linear-gradient(90deg, 
+                            ${getColor(game.discount)} 0%, 
+                            var(--background-dark) 100%)">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <img class="game-image" src="${game.image}" 
+                                 alt="${game.name} cover">
+                            <div class="discount-badge">
+                                <span class="discount-text">-${game.discount}%</span>
+                            </div>
+                            <div class="discount-badge">
+                                <span class="discount-text">
+                                    ${game.originalPrice} → ${game.discountPrice}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="game-name">${game.name}</div>
+                    </td>
+                `;
+                fragment.appendChild(tr);
+            });
+
+            $('#listcontent').empty().append(fragment);
+            $('#totalcount').text(games.length);
+        }
+
+        function initSliders(maxPrice) {
+            discountSlider = noUiSlider.create(document.getElementById('discountSlider'), {
+                start: [0, 100],
+                connect: true,
+                range: { min: 0, max: 100 },
+                step: 1,
+                format: {
+                    to: value => Math.round(value),
+                    from: value => Number(value)
+                },
+                behaviour: 'drag-tap'
+            });
+
+            priceSlider = noUiSlider.create(document.getElementById('priceSlider'), {
+                start: [0, maxPrice],
+                connect: true,
+                range: { min: 0, max: maxPrice },
+                step: 0.01,
+                format: {
+                    to: value => value.toFixed(2),
+                    from: value => Number(value)
                 }
             });
+
+            setupSliderSync(discountSlider, 'minDiscount', 'maxDiscount');
+            setupSliderSync(priceSlider, 'minPrice', 'maxPrice');
         }
-        
-        $(document).ready(showlist);
+
+        function setupSliderSync(slider, minId, maxId) {
+            const minInput = document.getElementById(minId);
+            const maxInput = document.getElementById(maxId);
+
+            slider.on('update', values => {
+                minInput.value = values[0];
+                maxInput.value = values[1];
+                debouncedFilter();
+            });
+
+            [minInput, maxInput].forEach(input => {
+                input.addEventListener('change', () => {
+                    slider.set([minInput.value || 0, maxInput.value || slider.options.range.max]);
+                });
+            });
+        }
+
+        function debouncedFilter() {
+            clearTimeout(filterTimeout);
+            filterTimeout = setTimeout(filterGames, DEBOUNCE_DELAY);
+        }
+
+        function filterGames() {
+            const searchText = $('#nameFilter').val().toLowerCase();
+            const [minDiscount, maxDiscount] = discountSlider.get();
+            const [minPrice, maxPrice] = priceSlider.get();
+
+            const filtered = allGames.filter(game => {
+                return game.name.toLowerCase().includes(searchText) &&
+                       game.discount >= minDiscount &&
+                       game.discount <= maxDiscount &&
+                       game.numericPrice >= minPrice &&
+                       game.numericPrice <= maxPrice;
+            });
+
+            renderGames(filtered);
+        }
+
+        $(document).ready(() => {
+            $.getJSON("./free_goods_detail.json")
+             .done(data => {
+                $('#uptime').text(data.update_time);
+                allGames = data.free_list.map(item => {
+                    const price = item[2].toLowerCase() === 'free' ? 0 : 
+                        parseFloat(item[2].replace(/[^\d.]/g, '')) || 0;
+                    
+                    return {
+                        discount: item[0],
+                        originalPrice: item[1],
+                        discountPrice: item[2],
+                        name: item[3],
+                        link: item[4],
+                        image: item[5],
+                        numericPrice: price
+                    };
+                });
+
+                const maxPrice = Math.ceil(Math.max(...allGames.map(g => g.numericPrice))) || 100;
+                initSliders(maxPrice);
+                filterGames();
+                
+                $('#nameFilter').on('input', debouncedFilter);
+            })
+            .fail(() => console.error('Error loading data'));
+        });
     </script>
 </body>
 </html>
