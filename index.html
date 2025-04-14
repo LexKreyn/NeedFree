@@ -237,7 +237,7 @@
 
         function getColor(percent) {
             percent = Math.max(1, Math.min(100, percent));
-            const hue = ((100 - percent) * 120 / 100).toString(10);
+            const hue = (percent * 120 / 100).toString(10);
             return `hsl(${hue}, 100%, 45%)`;
         }
 
