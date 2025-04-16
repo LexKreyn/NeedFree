@@ -64,7 +64,6 @@ def get_free_goods(start, append_list = False):
                         if sub_free[1]:
                             sub_free[1] = sub_free[1].get_text()
                         sub_free[0] = int(sub_free[0])
-                        print(sub_free)
                         free_list.put(sub_free)
 
             return goods_count
