@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Steam Discounts</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="icon" href="https://store.steampowered.com/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css" rel="stylesheet">
     <style>
@@ -82,6 +83,15 @@
             width: 120px;
             height: 45px;
             border-radius: 5px;
+        }
+
+        .game-link {
+            width: 100%;
+            height: 100%;
+        }
+
+        .game-link:hover {
+            text-decoration: none;
         }
 
         tr:hover {
@@ -252,26 +262,28 @@
                         style="background: linear-gradient(90deg, 
                             ${getColor(game.discount)} 0%, 
                             var(--background-dark) 100%)">
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <img class="game-image" src="${game.image}" 
-                                 alt="${game.name} cover">
-                            <div class="discount-badge">
-                                <span class="discount-text">-${game.discount}%</span>
+                        <a href="${game.link}" class="game-link">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <img class="game-image" src="${game.image}" 
+                                     alt="${game.name} cover">
+                                <div class="discount-badge">
+                                    <span class="discount-text">-${game.discount}%</span>
+                                </div>
+                                <div class="discount-badge">
+                                    <span class="discount-text">
+                                        ${game.originalPrice} → ${game.discountPrice}
+                                    </span>
+                                </div>
                             </div>
-                            <div class="discount-badge">
-                                <span class="discount-text">
-                                    ${game.originalPrice} → ${game.discountPrice}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="game-name">${game.name}</div>
+                            <div class="game-name">${game.name}</div>
+                        </a>
                     </td>
                 `;
                 fragment.appendChild(tr);
             });
 
             $('#listcontent').empty().append(fragment);
-            $('#totalcount').text(games.length);
+            $('#totalcount').text(`${games.length}\\${allGames.length}`);
         }
 
         function initSliders(maxPrice) {
