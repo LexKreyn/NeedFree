@@ -185,6 +185,7 @@
         }
 
         .page-item {
+            cursor: pointer;
             margin: 2px;
         }
 
@@ -283,6 +284,7 @@
         let currentPage = 1;
         const itemsPerPage = 100;
         let filteredGames = [];
+        const pageBorder = 2;
 
         function getColor(percent) {
             percent = Math.max(1, Math.min(100, percent));
@@ -339,7 +341,7 @@
             // Previous Button
             const prevItem = $('<li>').addClass('page-item' + (currentPage === 1 ? ' disabled' : ''));
             prevItem.append($('<a>').addClass('page-link')
-                .text('Previous')
+                .text('<')
                 .click(() => {
                     if(currentPage > 1) {
                         currentPage--;
@@ -350,8 +352,24 @@
             paginationList.append(prevItem);
 
             // Page Numbers
-            const startPage = Math.max(1, currentPage - 2);
-            const endPage = Math.min(totalPages, currentPage + 2);
+            const startPage = Math.max(1, currentPage - pageBorder);
+            const endPage = Math.min(totalPages, currentPage + pageBorder);
+
+            if (currentPage > (pageBorder + 1)) {
+                const firstPage = $('<li>').addClass('page-item' + (1 === currentPage ? ' active' : ''));
+                firstPage.append($('<a>').addClass('page-link')
+                    .text(1)
+                    .click(() => {
+                        currentPage = 1;
+                        renderGames(filteredGames, currentPage);
+                        updatePagination(filteredGames.length);
+                    }));
+                paginationList.append(firstPage);
+
+                const firstEmptyPage = $('<li>').addClass('page-item');
+                firstEmptyPage.append($('<a>').addClass('page-link').text('..'));
+                paginationList.append(firstEmptyPage);
+            }
             
             for(let i = startPage; i <= endPage; i++) {
                 const pageItem = $('<li>').addClass('page-item' + (i === currentPage ? ' active' : ''));
@@ -365,10 +383,26 @@
                 paginationList.append(pageItem);
             }
 
+            if (currentPage < (totalPages - pageBorder - 1)) {
+                const lastEmptyPage = $('<li>').addClass('page-item');
+                lastEmptyPage.append($('<a>').addClass('page-link').text('..'));
+                paginationList.append(lastEmptyPage);
+
+                const lastPage = $('<li>').addClass('page-item' + (totalPages === currentPage ? ' active' : ''));
+                lastPage.append($('<a>').addClass('page-link')
+                    .text(totalPages)
+                    .click(() => {
+                        currentPage = totalPages;
+                        renderGames(filteredGames, currentPage);
+                        updatePagination(filteredGames.length);
+                    }));
+                paginationList.append(lastPage);
+            }
+
             // Next Button
             const nextItem = $('<li>').addClass('page-item' + (currentPage === totalPages ? ' disabled' : ''));
             nextItem.append($('<a>').addClass('page-link')
-                .text('Next')
+                .text('>')
                 .click(() => {
                     if(currentPage < totalPages) {
                         currentPage++;
