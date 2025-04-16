@@ -6,12 +6,14 @@ import time
 import json
 import pytz
 import bs4
+import re
 
 
 API_URL_TEMPLATE = "https://store.steampowered.com/search/results/?query&start={pos}&count=100&specials=1&infinite=1"
 THREAD_CNT = 8
 
 free_list = queue.Queue()
+
 
 def fetch_Steam_json_response(url):
     ''' Fetch json response from Steam API
@@ -58,11 +60,13 @@ def get_free_goods(start, append_list = False):
                 ] for div in full_discounts_div
             ]
 
+            counter = 0
             if append_list:
                 for sub_free in sub_free_list:
                     if sub_free[0] and sub_free[0] != '0':
                         if sub_free[1]:
                             sub_free[1] = sub_free[1].get_text()
+                        counter += 1
                         sub_free[0] = int(sub_free[0])
                         free_list.put(sub_free)
 
@@ -87,13 +91,22 @@ wait(futures, return_when=ALL_COMPLETED)
 
 # Process free list
 final_free_list = []
-free_names = set()
+free_ids = set()
 while not free_list.empty():
     free_item = free_list.get()
-    game_name = free_item[0]
-    if game_name not in free_names:
-        free_names.add(game_name)
-        final_free_list.append(free_item)
+
+    game_link = free_item[4]
+
+    game_id = re.search(r'.com\/[a-z]+\/(\d+)\/', game_link)
+    if game_id is None:
+        continue
+
+    game_id = int(game_id.group(1))
+    if game_id in free_ids:
+        continue
+
+    free_ids.add(game_id)
+    final_free_list.append(free_item)
 
 final_free_list = sorted_data = sorted(final_free_list, key=lambda x: (-x[0], x[1]))
 
