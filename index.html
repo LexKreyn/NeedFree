@@ -173,6 +173,38 @@
             content: none;
         }
     </style>
+    <style>
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .pagination {
+            flex-wrap: wrap;
+        }
+
+        .page-item {
+            margin: 2px;
+        }
+
+        .page-link {
+            background-color: var(--background-medium);
+            border-color: var(--background-light);
+            color: var(--accent-color);
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .page-item.active .page-link {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .page-link:hover {
+            background-color: var(--background-light);
+        }
+        </style>
 </head>
 <body>
     <div class="container">
@@ -209,6 +241,8 @@
                 </div>
             </div>
 
+            <div id="pagination" class="pagination-container"></div>
+
             <table class="table table-striped table-dark">
                 <tbody id="listcontent"></tbody>
                 <tfoot>
@@ -243,7 +277,12 @@
         let allGames = [];
         let discountSlider, priceSlider;
         let filterTimeout;
+
         const DEBOUNCE_DELAY = 500;
+
+        let currentPage = 1;
+        const itemsPerPage = 100;
+        let filteredGames = [];
 
         function getColor(percent) {
             percent = Math.max(1, Math.min(100, percent));
@@ -251,10 +290,14 @@
             return `hsl(${hue}, 100%, 45%)`;
         }
 
-        function renderGames(games) {
+        function renderGames(games, page = 1) {
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pagedGames = games.slice(start, end);
+            
             const fragment = document.createDocumentFragment();
             
-            games.forEach(game => {
+            pagedGames.forEach(game => {
                 const tr = document.createElement('tr');
                 tr.className = 'table-success';
                 tr.innerHTML = `
@@ -262,7 +305,7 @@
                         style="background: linear-gradient(90deg, 
                             ${getColor(game.discount)} 0%, 
                             var(--background-dark) 100%)">
-                        <a href="${game.link}" class="game-link">
+                        <a href="${game.link}" class="game-link" target="_blank">
                             <div style="display: flex; align-items: center; gap: 12px;">
                                 <img class="game-image" src="${game.image}" 
                                      alt="${game.name} cover">
@@ -283,7 +326,59 @@
             });
 
             $('#listcontent').empty().append(fragment);
-            $('#totalcount').text(`${games.length}\\${allGames.length}`);
+            $('#totalcount').text(`${pagedGames.length} of ${filteredGames.length}/${allGames.length} (Page ${page}/${Math.ceil(filteredGames.length/itemsPerPage)})`);
+        }
+
+        function updatePagination(totalItems) {
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            const pagination = $('#pagination');
+            pagination.empty();
+
+            const paginationList = $('<ul>').addClass('pagination');
+            
+            // Previous Button
+            const prevItem = $('<li>').addClass('page-item' + (currentPage === 1 ? ' disabled' : ''));
+            prevItem.append($('<a>').addClass('page-link')
+                .text('Previous')
+                .click(() => {
+                    if(currentPage > 1) {
+                        currentPage--;
+                        renderGames(filteredGames, currentPage);
+                        updatePagination(filteredGames.length);
+                    }
+                }));
+            paginationList.append(prevItem);
+
+            // Page Numbers
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+            
+            for(let i = startPage; i <= endPage; i++) {
+                const pageItem = $('<li>').addClass('page-item' + (i === currentPage ? ' active' : ''));
+                pageItem.append($('<a>').addClass('page-link')
+                    .text(i)
+                    .click(() => {
+                        currentPage = i;
+                        renderGames(filteredGames, currentPage);
+                        updatePagination(filteredGames.length);
+                    }));
+                paginationList.append(pageItem);
+            }
+
+            // Next Button
+            const nextItem = $('<li>').addClass('page-item' + (currentPage === totalPages ? ' disabled' : ''));
+            nextItem.append($('<a>').addClass('page-link')
+                .text('Next')
+                .click(() => {
+                    if(currentPage < totalPages) {
+                        currentPage++;
+                        renderGames(filteredGames, currentPage);
+                        updatePagination(filteredGames.length);
+                    }
+                }));
+            paginationList.append(nextItem);
+
+            pagination.append(paginationList);
         }
 
         function initSliders(maxPrice) {
@@ -341,7 +436,7 @@
             const [minDiscount, maxDiscount] = discountSlider.get();
             const [minPrice, maxPrice] = priceSlider.get();
 
-            const filtered = allGames.filter(game => {
+            filteredGames = allGames.filter(game => {
                 return game.name.toLowerCase().includes(searchText) &&
                        game.discount >= minDiscount &&
                        game.discount <= maxDiscount &&
@@ -349,7 +444,9 @@
                        game.numericPrice <= maxPrice;
             });
 
-            renderGames(filtered);
+            currentPage = 1;
+            renderGames(filteredGames, currentPage);
+            updatePagination(filteredGames.length);
         }
 
         $(document).ready(() => {
