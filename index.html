@@ -56,7 +56,6 @@
         }
 
         .discount-text {
-            font-size: 16px;
             position: relative;
             z-index: 2;
             font-weight: bold;
@@ -318,32 +317,7 @@
                                 </div>
                                 <div class="discount-badge">
                                     <span class="discount-text">
-                                        US: $${game.prices.us.initial} → $${game.prices.us.final}
-                                    </span>
-                                </div>
-                                <div class="discount-badge">
-                                    <span class="discount-text">
-                                        GB: £${game.prices.gb.initial} → £${game.prices.gb.final}
-                                    </span>
-                                </div>
-                                <div class="discount-badge">
-                                    <span class="discount-text">
-                                        FR: €${game.prices.fr.initial} → €${game.prices.fr.final}
-                                    </span>
-                                </div>
-                                <div class="discount-badge">
-                                    <span class="discount-text">
-                                        JP: ¥${game.prices.jp.initial} → ¥${game.prices.jp.final}
-                                    </span>
-                                </div>
-                                <div class="discount-badge">
-                                    <span class="discount-text">
-                                        RU: ₽${game.prices.ru.initial} → ₽${game.prices.ru.final}
-                                    </span>
-                                </div>
-                                <div class="discount-badge">
-                                    <span class="discount-text">
-                                        BR: R$${game.prices.br.initial} → R$${game.prices.br.final}
+                                        ${game.originalPrice} → ${game.discountPrice}
                                     </span>
                                 </div>
                             </div>
@@ -517,15 +491,17 @@
              .done(data => {
                 $('#uptime').text(data.update_time);
                 allGames = data.free_list.map(item => {
+                    const price = item[2].toLowerCase() === 'free' ? 0 : 
+                        parseFloat(item[2].replace(/[^\d.]/g, '')) || 0;
+                    
                     return {
-                        game_id: item[0],
-                        cart_id: item[1],
-                        discount: item[2],
-                        prices: item[3],
-                        name: item[4],
-                        link: item[5],
-                        image: item[6],
-                        numericPrice: item[3]['us']['final']
+                        discount: item[0],
+                        originalPrice: item[1],
+                        discountPrice: item[2],
+                        name: item[3],
+                        link: item[4],
+                        image: item[5],
+                        numericPrice: price
                     };
                 });
 
