@@ -108,7 +108,7 @@ while not free_list.empty():
     free_ids.add(game_id)
     final_free_list.append(free_item)
 
-final_free_list = sorted_data = sorted(final_free_list, key=lambda x: (-x[0], x[1]))
+final_free_list = sorted_data = sorted(final_free_list, key=lambda x: (-x[0], x[3]))
 
 with open("free_goods_detail.json", "w", encoding="utf-8") as fp:
     json.dump({
