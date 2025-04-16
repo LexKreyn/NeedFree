@@ -365,7 +365,8 @@
                         updatePagination(filteredGames.length);
                     }));
                 paginationList.append(firstPage);
-
+            }
+            if (currentPage > (pageBorder + 2)) {
                 const firstEmptyPage = $('<li>').addClass('page-item');
                 firstEmptyPage.append($('<a>').addClass('page-link').text('..'));
                 paginationList.append(firstEmptyPage);
@@ -387,7 +388,8 @@
                 const lastEmptyPage = $('<li>').addClass('page-item');
                 lastEmptyPage.append($('<a>').addClass('page-link').text('..'));
                 paginationList.append(lastEmptyPage);
-
+            }
+            if (currentPage < (totalPages - pageBorder - 0)) {
                 const lastPage = $('<li>').addClass('page-item' + (totalPages === currentPage ? ' active' : ''));
                 lastPage.append($('<a>').addClass('page-link')
                     .text(totalPages)
