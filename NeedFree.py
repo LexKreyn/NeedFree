@@ -8,7 +8,7 @@ import pytz
 import bs4
 
 
-API_URL_TEMPLATE = "https://store.steampowered.com/search/results/?query&start={pos}&count=100&infinite=1"
+API_URL_TEMPLATE = "https://store.steampowered.com/search/results/?query&start={pos}&count=100&specials=1&infinite=1"
 THREAD_CNT = 8
 
 free_list = queue.Queue()
