@@ -51,12 +51,13 @@ def get_free_goods(start, append_list = False):
             full_discounts_div = page_parser.find_all(name = "div", attrs = {"class":"search_discount_block"})
             sub_free_list = [
                 [
-                    div.parent.parent.parent.parent.find(name="div", attrs={"class": "search_discount_block"}).get('data-discount'),
-                    div.parent.parent.parent.parent.find(name="div", attrs={"class": "discount_original_price"}),
-                    div.parent.parent.parent.parent.find(name="div", attrs={"class": "discount_final_price"}).get_text(),
-                    div.parent.parent.parent.parent.find(name="span", attrs={"class": "title"}).get_text(),
-                    div.parent.parent.parent.parent.get("href"),
-                    div.parent.parent.parent.parent.find_all("div")[0].find("img").get("src")
+                    div.parent.parent.parent.parent.find(name="div", attrs={"class": "search_discount_block"}).get('data-discount'),  # discount
+                    div.parent.parent.parent.parent.find(name="div", attrs={"class": "discount_original_price"}),  # full price
+                    div.parent.parent.parent.parent.find(name="div", attrs={"class": "discount_final_price"}).get_text(),  # price with discount
+                    div.parent.parent.parent.parent.find(name="span", attrs={"class": "title"}).get_text(),  # title
+                    div.parent.parent.parent.parent.get("href"),  # link
+                    div.parent.parent.parent.parent.find_all("div")[0].find("img").get("src"),  # image
+                    div.parent.parent.parent.parent.get("data-ds-tagids")  # tags
                 ] for div in full_discounts_div
             ]
 
@@ -104,6 +105,9 @@ while not free_list.empty():
     game_id = int(game_id.group(1))
     if game_id in free_ids:
         continue
+
+    game_tags = free_item[6]
+    free_item[6] = json.loads(game_tags)
 
     free_ids.add(game_id)
     final_free_list.append(free_item)
