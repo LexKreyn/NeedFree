@@ -175,6 +175,63 @@
         }
     </style>
     <style>
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+            margin-left: 5px;
+        }
+
+        .game-tag {
+            display: inline-block;
+            padding: 2px 6px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: rgba(255, 255, 255, 0.3);
+            font-size: 12px;
+            color: #333;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .game-tag:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .game-tag-not-selected {
+            display: inline-block;
+            padding: 2px 6px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: rgba(255, 0, 0, 0.3);
+            font-size: 12px;
+            color: #333;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .game-tag-not-selected:hover {
+            background-color: rgba(255, 0, 0, 0.5);
+        }
+
+        .game-tag-selected {
+            display: inline-block;
+            padding: 2px 6px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: rgba(0, 255, 0, 0.3);
+            font-size: 12px;
+            color: #333;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .game-tag-selected:hover {
+            background-color: rgba(0, 255, 0    , 0.5);
+        }
+    </style>
+    <style>
         .pagination-container {
             display: flex;
             justify-content: center;
@@ -205,6 +262,175 @@
 
         .page-link:hover {
             background-color: var(--background-light);
+        }
+    </style>
+    <style>
+        .tags-filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            align-items: center;
+            min-height: 38px;
+            padding: 5px;
+            border: 1px solid var(--background-light);
+            border-radius: 4px;
+            background-color: var(--background-medium);
+        }
+
+        .filter-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            border: 1px solid var(--accent-color);
+            border-radius: 3px;
+            background-color: rgba(var(--accent-color-rgb), 0.2);
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-tag:hover {
+            background-color: rgba(var(--accent-color-rgb), 0.3);
+        }
+
+        .filter-tag .remove-tag {
+            margin-left: 5px;
+            font-size: 16px;
+            line-height: 1;
+        }
+
+        .filter-tag .remove-tag:hover {
+            color: var(--accent-color);
+        }
+
+        .add-tag {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px dashed var(--background-light);
+        }
+
+        .add-tag:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .add-tag-text {
+            margin-left: 5px;
+            font-size: 14px;
+        }
+
+        .modal-content {
+            background-color: var(--background-dark);
+            color: white;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid var(--background-light);
+        }
+
+        .modal-header .close {
+            color: white;
+        }
+
+        .modal-title {
+            color: white;
+        }
+
+        .tags-modal-body {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .tag-search-container {
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            background-color: var(--background-dark);
+            z-index: 10;
+            border-bottom: 1px solid var(--background-light);
+        }
+
+        .tag-search-input {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .tags-alphabet-container {
+            padding: 0 15px 15px;
+        }
+
+        .letter-group {
+            margin-bottom: 15px;
+        }
+
+        .letter-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin: 10px 0 5px;
+            padding-bottom: 3px;
+            border-bottom: 1px solid var(--background-light);
+        }
+
+        .no-tags {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 14px;
+            padding: 5px 0;
+        }
+
+        .letter-divider {
+            height: 1px;
+            background-color: var(--background-light);
+            margin: 10px 0;
+            opacity: 0.3;
+        }
+
+        .modal-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            margin: 3px;
+            border: 1px solid var(--background-light);
+            border-radius: 3px;
+            background-color: var(--background-medium);
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-tag-selected {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            cursor: default;
+            opacity: 0.7;
+        }
+
+        .modal-tag-selected:hover {
+            transform: none;
+            background-color: var(--accent-color);
+        }
+
+        .modal-tag:hover:not(.modal-tag-selected) {
+            background-color: var(--accent-color-light);
+            transform: translateY(-2px);
+        }
+
+        .modal-tag:hover {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            transform: translateY(-2px);
+        }
+
+        .modal-lg {
+            max-width: 800px;
+        }
+
+        .selected-check {
+            margin-left: 5px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -305,6 +531,9 @@
         let allGames = [];
         let discountSlider, priceSlider;
         let filterTimeout;
+        let selectedTags = [];
+        let allAvailableTags = [];
+        let modalEventHandlersAttached = false;
 
         const DEBOUNCE_DELAY = 500;
 
@@ -323,12 +552,32 @@
             const start = (page - 1) * itemsPerPage;
             const end = start + itemsPerPage;
             const pagedGames = games.slice(start, end);
-            
+
             const fragment = document.createDocumentFragment();
-            
+
             pagedGames.forEach(game => {
                 const tr = document.createElement('tr');
                 tr.className = 'table-success';
+                let tagsHTML = '';
+                if (game.tags && game.tags.length > 0) {
+                    tagsHTML = `
+                        <div class="tags-container">
+                            ${game.tags.map(tag => {
+                                const tagId = parseInt(Object.keys(allAvailableTags).find(
+                                    key => allAvailableTags[key] === tag
+                                ));
+                                const isSelected = selectedTags.includes(tagId);
+
+                                let tagClass = 'game-tag';
+                                if (selectedTags.length > 0) {
+                                    tagClass = isSelected ? 'game-tag-selected' : 'game-tag-not-selected';
+                                }
+
+                                return `<span class="${tagClass}">${tag}</span>`;
+                            }).join('')}
+                        </div>
+                    `;
+                }
                 tr.innerHTML = `
                     <td class="game-row" 
                         style="background: linear-gradient(90deg, 
@@ -336,18 +585,16 @@
                             var(--background-dark) 100%)">
                         <a href="${game.link}" class="game-link" target="_blank">
                             <div style="display: flex; align-items: center; gap: 12px;">
-                                <img class="game-image" src="${game.image}" 
-                                     alt="${game.name} cover">
+                                <img class="game-image" src="${game.image}" alt="${game.name} cover">
                                 <div class="discount-badge">
                                     <span class="discount-text">-${game.discount}%</span>
                                 </div>
                                 <div class="discount-badge">
-                                    <span class="discount-text">
-                                        ${game.originalPrice} → ${game.discountPrice}
-                                    </span>
+                                    <span class="discount-text">${game.originalPrice} → ${game.discountPrice}</span>
                                 </div>
                             </div>
                             <div class="game-name">${game.name}</div>
+                            ${tagsHTML}
                         </a>
                     </td>
                 `;
@@ -364,7 +611,7 @@
             pagination.empty();
 
             const paginationList = $('<ul>').addClass('pagination');
-            
+
             // Previous Button
             const prevItem = $('<li>').addClass('page-item' + (currentPage === 1 ? ' disabled' : ''));
             prevItem.append($('<a>').addClass('page-link')
@@ -398,7 +645,7 @@
                 firstEmptyPage.append($('<a>').addClass('page-link').text('..'));
                 paginationList.append(firstEmptyPage);
             }
-            
+
             for(let i = startPage; i <= endPage; i++) {
                 const pageItem = $('<li>').addClass('page-item' + (i === currentPage ? ' active' : ''));
                 pageItem.append($('<a>').addClass('page-link')
@@ -500,26 +747,205 @@
             const [minPrice, maxPrice] = priceSlider.get();
 
             filteredGames = allGames.filter(game => {
-                return game.name.toLowerCase().includes(searchText) &&
-                       game.discount >= minDiscount &&
-                       game.discount <= maxDiscount &&
-                       game.numericPrice >= minPrice &&
-                       game.numericPrice <= maxPrice;
+                const nameMatch = game.name.toLowerCase().includes(searchText);
+                const discountMatch = game.discount >= minDiscount && game.discount <= maxDiscount;
+                const priceMatch = game.numericPrice >= minPrice && game.numericPrice <= maxPrice;
+
+                let tagsMatch = true;
+                if (selectedTags.length > 0) {
+                    if (!game.tags) return false;
+
+                    tagsMatch = selectedTags.every(tagId => game.numericTags.includes(tagId));
+                }
+
+                return nameMatch && discountMatch && priceMatch && tagsMatch;
             });
 
             currentPage = 1;
             renderGames(filteredGames, currentPage);
             updatePagination(filteredGames.length);
+            renderTagFilter();
+        }
+
+        function showTagModal() {
+            // const availableTags = Object.entries(allAvailableTags)
+            //     .filter(([id, tag]) => !selectedTags.includes(parseInt(id)))
+            //     .reduce((acc, [id, tag]) => ({ ...acc, [id]: tag }), {});
+            const availableTags = allAvailableTags;
+
+            const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+            const groupedTags = {};
+            alphabet.forEach(letter => {
+                groupedTags[letter] = Object.entries(availableTags)
+                    .filter(([id, tag]) => tag.charAt(0).toUpperCase() === letter)
+                    .sort((a, b) => a[1].localeCompare(b[1]));
+            });
+
+            $('#tagsModal').remove();
+
+            const modal = $(`
+                <div class="modal fade" id="tagsModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Select Tags</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body tags-modal-body">
+                                <div class="tag-search-container">
+                                    <input type="text" class="form-control tag-search-input" placeholder="Search tags...">
+                                </div>
+                                <div class="tags-alphabet-container">
+                                    ${alphabet.map(letter => `
+                                        <div class="letter-group" data-letter="${letter}">
+                                            <div class="letter-header">${letter}</div>
+                                            <div class="tags-row">
+                                                ${groupedTags[letter].length > 0 ? 
+                                                    groupedTags[letter].map(([id, tag]) => {
+                                                        const isSelected = selectedTags.includes(parseInt(id));
+                                                        return `
+                                                            <span class="modal-tag ${isSelected ? 'modal-tag-selected' : ''}" 
+                                                                  data-tag="${id}" ${isSelected ? 'data-selected="true"' : ''}>
+                                                                ${tag}
+                                                                ${isSelected ? '<span class="selected-check">✓</span>' : ''}
+                                                            </span>
+                                                        `;
+                                                    }).join('') : 
+                                                    '<div class="no-tags">No tags</div>'
+                                                }
+                                            </div>
+                                            <div class="letter-divider"></div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `);
+
+            $('body').append(modal);
+
+            if (!modalEventHandlersAttached) {
+                $('body').on('input', '.tag-search-input', function() {
+                    const searchText = $(this).val().toLowerCase();
+
+                    if (searchText.length === 0) {
+                        $('.letter-group').show();
+                        $('.modal-tag').show();
+                        return;
+                    }
+
+                    $('.letter-group').each(function() {
+                        const $group = $(this);
+                        let hasMatches = false;
+
+                        $group.find('.modal-tag').each(function() {
+                            const tagText = $(this).text().toLowerCase();
+                            const isMatch = tagText.includes(searchText);
+                            $(this).toggle(isMatch);
+                            if (isMatch) hasMatches = true;
+                        });
+
+                        $group.toggle(hasMatches || $group.find('.letter-header').text().toLowerCase().includes(searchText));
+                    });
+                });
+
+                $('body').on('click', '.modal-tag:not(.modal-tag-selected)', function() {
+                    const tagId = parseInt($(this).data('tag'));
+                    if (!selectedTags.includes(tagId)) {
+                        selectedTags.push(tagId);
+                        $(this)
+                            .addClass('modal-tag-selected')
+                            .attr('data-selected', 'true')
+                            .append('<span class="selected-check">✓</span>');
+
+                        filterGames();
+                    }
+                });
+
+                modalEventHandlersAttached = true;
+            }
+
+            // $('body').on('click', '.modal-tag-selected', function() {
+            //     const tagId = parseInt($(this).data('tag'));
+            //     selectedTags = selectedTags.filter(id => id !== tagId);
+            //     $(this)
+            //         .removeClass('modal-tag-selected')
+            //         .attr('data-selected', 'false');
+
+            //     filterGames();
+            // });
+
+            // $('.modal-tag').on('click', function() {
+            //     const tagId = $(this).data('tag');
+            //     selectedTags.push(tagId);
+            //     $('#tagsModal').modal('hide');
+            //     filterGames();
+            // });
+
+            $('#tagsModal').on('hidden.bs.modal', function() {
+                $(this).remove();
+            });
+
+            $('#tagsModal').modal('show');
+        }
+
+        function renderTagFilter() {
+            const tagsContainer = $('#tagsFilterContainer');
+            if (!tagsContainer.length) {
+                $('.filter-container').append(`
+                    <div class="filter-group">
+                        <div id="tagsFilterContainer" class="tags-filter-container"></div>
+                    </div>
+                `);
+            }
+
+            const container = $('#tagsFilterContainer');
+            container.empty();
+
+            selectedTags.forEach(tagId => {
+                const tagName = allAvailableTags[tagId] || tagId;
+                container.append(`
+                    <span class="filter-tag" data-tag="${tagId}">
+                        ${tagName} <span class="remove-tag">×</span>
+                    </span>
+                `);
+            });
+
+            container.append(`
+                <span class="filter-tag add-tag" id="addTagButton">
+                    + <span class="add-tag-text">Add tag</span>
+                </span>
+            `);
+
+            $('.remove-tag').on('click', function(e) {
+                e.stopPropagation();
+                const tagId = $(this).parent().data('tag');
+                selectedTags = selectedTags.filter(id => id !== tagId);
+                filterGames();
+            });
+
+            $('#addTagButton').on('click', showTagModal);
         }
 
         $(document).ready(() => {
+            $.getJSON("./tags.json")
+             .done(steamTags => {
+                allAvailableTags = steamTags;
+            })
+             .fail(() => console.error('Error loading data')); 
+
             $.getJSON("./free_goods_detail.json")
              .done(data => {
                 $('#uptime').text(data.update_time);
                 allGames = data.free_list.map(item => {
-                    const price = item[2].toLowerCase() === 'free' ? 0 : 
-                        parseFloat(item[2].replace(/[^\d.]/g, '')) || 0;
-                    
+                    const price = item[2].toLowerCase() === 'free' ? 0 : parseFloat(item[2].replace(/[^\d.]/g, '')) || 0;
+                    const tags = item[6].map(id => allAvailableTags[id]);
+
                     return {
                         discount: item[0],
                         originalPrice: item[1],
@@ -527,17 +953,19 @@
                         name: item[3],
                         link: item[4],
                         image: item[5],
-                        numericPrice: price
+                        numericPrice: price,
+                        numericTags: item[6],
+                        tags: tags
                     };
                 });
 
                 const maxPrice = Math.ceil(Math.max(...allGames.map(g => g.numericPrice))) || 100;
                 initSliders(maxPrice);
                 filterGames();
-                
+
                 $('#nameFilter').on('input', debouncedFilter);
             })
-            .fail(() => console.error('Error loading data'));
+            .fail(() => console.error('Error loading data')); 
         });
     </script>
 </body>
