@@ -107,7 +107,7 @@ while not free_list.empty():
         continue
 
     game_tags = free_item[6]
-    free_item[6] = json.loads(game_tags)
+    free_item[6] = json.loads(game_tags or '[]')
 
     free_ids.add(game_id)
     final_free_list.append(free_item)
