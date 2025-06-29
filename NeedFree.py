@@ -57,7 +57,13 @@ def get_free_goods(start, append_list = False):
                     div.parent.parent.parent.parent.find(name="span", attrs={"class": "title"}).get_text(),  # title
                     div.parent.parent.parent.parent.get("href"),  # link
                     div.parent.parent.parent.parent.find_all("div")[0].find("img").get("src"),  # image
-                    div.parent.parent.parent.parent.get("data-ds-tagids")  # tags
+                    div.parent.parent.parent.parent.get("data-ds-tagids"),  # tags
+                    div.parent.parent.parent.parent.get("data-ds-bundleid"),  # is_bundle
+                    div.parent.parent.parent.parent.find(name="span", attrs={"class": "music"}),  # is_soundtrack
+                    div.parent.parent.parent.parent.find(name="span", attrs={"class": "win"}),  # for win
+                    div.parent.parent.parent.parent.find(name="span", attrs={"class": "mac"}),  # for mac
+                    div.parent.parent.parent.parent.find(name="span", attrs={"class": "linux"}),  # for linux
+                    div.parent.parent.parent.parent.find(name="span", attrs={"class": "vr_supported"}),  # for vr_supported
                 ] for div in full_discounts_div
             ]
 
@@ -108,6 +114,24 @@ while not free_list.empty():
 
     game_tags = free_item[6]
     free_item[6] = json.loads(game_tags or '[]')
+
+    is_bundle = free_item[7]
+    free_item[7] = bool(is_bundle)
+
+    is_soundtrack = free_item[8]
+    free_item[8] = bool(is_soundtrack)
+
+    for_win = free_item[9]
+    free_item[9] = bool(for_win)
+
+    for_mac = free_item[10]
+    free_item[10] = bool(for_mac)
+
+    for_linux = free_item[11]
+    free_item[11] = bool(for_linux)
+
+    for_vr = free_item[12]
+    free_item[12] = bool(for_vr)
 
     free_ids.add(game_id)
     final_free_list.append(free_item)
