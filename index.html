@@ -433,6 +433,92 @@
             font-weight: bold;
         }
     </style>
+    <style>
+        .platform-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .platform-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .additional-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .additional-filter {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        input[type="checkbox"] {
+            cursor: pointer;
+        }
+    </style>
+    <style>
+        .game-meta-info {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            width: 100%;
+            margin: 5px 0;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .platform-icons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .platform-icon {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .win-icon {
+            background-color: #0078d7;
+            color: white;
+        }
+
+        .mac-icon {
+            background-color: #555555;
+            color: white;
+        }
+
+        .linux-icon {
+            background-color: #f0a30a;
+            color: black;
+        }
+
+        .vr-icon {
+            display: flex;
+            align-items: center;
+            background-color: #6a35b8;
+            color: white;
+        }
+
+        .content-type {
+            padding: 2px 6px;
+            border-radius: 3px;
+            background-color: rgba(255, 255, 255, 0.1);
+            font-style: italic;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <!-- Google tag (gtag.js) -->
@@ -470,27 +556,54 @@
 
             <div class="filter-container">
                 <div class="filter-group">
-                    <input type="text" class="form-control" 
-                           id="nameFilter" placeholder="Search game...">
+                    <input type="text" class="form-control" id="nameFilter" placeholder="Search game...">
                 </div>
 
                 <div class="filter-group">
                     <div class="slider-group">
-                        <input type="number" class="form-control slider-input" 
-                               id="minDiscount" placeholder="Min%">
+                        <input type="number" class="form-control slider-input" id="minDiscount" placeholder="Min%">
                         <div id="discountSlider" style="flex-grow:1;"></div>
-                        <input type="number" class="form-control slider-input" 
-                               id="maxDiscount" placeholder="Max%">
+                        <input type="number" class="form-control slider-input" id="maxDiscount" placeholder="Max%">
                     </div>
                 </div>
 
                 <div class="filter-group">
                     <div class="slider-group">
-                        <input type="number" class="form-control slider-input" 
-                               id="minPrice" placeholder="Min$">
+                        <input type="number" class="form-control slider-input" id="minPrice" placeholder="Min$">
                         <div id="priceSlider" style="flex-grow:1;"></div>
-                        <input type="number" class="form-control slider-input" 
-                               id="maxPrice" placeholder="Max$">
+                        <input type="number" class="form-control slider-input" id="maxPrice" placeholder="Max$">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="platform-filters">
+                        <label class="platform-checkbox">
+                            <input type="checkbox" id="winFilter"> Windows
+                        </label>
+                        <label class="platform-checkbox">
+                            <input type="checkbox" id="macFilter"> Mac
+                        </label>
+                        <label class="platform-checkbox">
+                            <input type="checkbox" id="linuxFilter"> Linux
+                        </label>
+                    </div>
+
+                    <div class="additional-filters">
+                        <label class="additional-filter">
+                            <input type="checkbox" id="appFilter" checked> Apps
+                        </label>
+                        <label class="additional-filter">
+                            <input type="checkbox" id="bundleFilter" checked> Bundles
+                        </label>
+                        <label class="additional-filter">
+                            <input type="checkbox" id="soundtrackFilter" checked> Soundtracks
+                        </label>
+                    </div>
+                    
+                    <div class="additional-filters">
+                        <label class="additional-filter">
+                            <input type="checkbox" id="vrFilter"> VR Only
+                        </label>
                     </div>
                 </div>
             </div>
@@ -542,6 +655,16 @@
         let filteredGames = [];
         const pageBorder = 2;
 
+        let platformFilters = {
+            win: false,
+            mac: false,
+            linux: false
+        };
+        let vrFilter = false;
+        let appFilter = true;
+        let bundleFilter = true;
+        let soundtrackFilter = true;
+
         function getColor(percent) {
             percent = Math.max(1, Math.min(100, percent));
             const hue = (percent * 120 / 100).toString(10);
@@ -580,9 +703,7 @@
                 }
                 tr.innerHTML = `
                     <td class="game-row" 
-                        style="background: linear-gradient(90deg, 
-                            ${getColor(game.discount)} 0%, 
-                            var(--background-dark) 100%)">
+                        style="background: linear-gradient(90deg, ${getColor(game.discount)} 0%, var(--background-dark) 100%)">
                         <a href="${game.link}" class="game-link" target="_blank">
                             <div style="display: flex; align-items: center; gap: 12px;">
                                 <img class="game-image" src="${game.image}" alt="${game.name} cover">
@@ -590,10 +711,26 @@
                                     <span class="discount-text">-${game.discount}%</span>
                                 </div>
                                 <div class="discount-badge">
-                                    <span class="discount-text">${game.originalPrice} → ${game.discountPrice}</span>
+                                    <span class="discount-text">
+                                        ${game.originalPrice} → ${game.discountPrice}
+                                    </span>
                                 </div>
                             </div>
                             <div class="game-name">${game.name}</div>
+                            
+                            <div class="game-meta-info">
+                                <div class="content-type">
+                                    ${game.is_bundle ? 'Bundle' : game.is_soundtrack ? 'Soundtrack' : 'App'}
+                                </div>
+                                <div class="platform-icons">
+                                    ${game.for_win ? '<img src="https://store.fastly.steamstatic.com/public/images/v6/icon_platform_win.png" class="platform-icon" title="Windows">' : ''}
+                                    ${game.for_mac ? '<img src="https://store.fastly.steamstatic.com/public/images/v6/icon_platform_mac.png" class="platform-icon" title="Windows">' : ''}
+                                    ${game.for_linux ? '<img src="https://store.fastly.steamstatic.com/public/images/v6/icon_platform_linux.png" class="platform-icon" title="Windows">' : ''}
+                                    ${game.for_vr ? '<span class="platform-icon vr-icon" title="VR Supported">VR</span>' : ''}
+                                </div>
+                            </div>
+                            
+                            <!-- Блок с тегами -->
                             ${tagsHTML}
                         </a>
                     </td>
@@ -750,15 +887,37 @@
                 const nameMatch = game.name.toLowerCase().includes(searchText);
                 const discountMatch = game.discount >= minDiscount && game.discount <= maxDiscount;
                 const priceMatch = game.numericPrice >= minPrice && game.numericPrice <= maxPrice;
-
+                
                 let tagsMatch = true;
                 if (selectedTags.length > 0) {
-                    if (!game.tags) return false;
-
-                    tagsMatch = selectedTags.every(tagId => game.numericTags.includes(tagId));
+                    if (!game.tags || !game.numericTags) return false;
+                    tagsMatch = selectedTags.every(tagId => 
+                        game.numericTags.includes(tagId)
+                    );
                 }
-
-                return nameMatch && discountMatch && priceMatch && tagsMatch;
+                
+                const platformMatch = 
+                    (!platformFilters.win || game.for_win) &&
+                    (!platformFilters.mac || game.for_mac) &&
+                    (!platformFilters.linux || game.for_linux);
+                
+                const vrMatch = !vrFilter || game.for_vr;
+                
+                let matchApp = false;
+                let matchBundle = false;
+                let matchSoundtrack = false;
+                if (appFilter && (game.is_bundle == false && game.is_soundtrack == false)) {
+                    matchApp = true;
+                }
+                if (bundleFilter && (game.is_bundle == true)) {
+                    matchBundle = true;
+                }
+                if (soundtrackFilter && (game.is_bundle == false && game.is_soundtrack == true)) {
+                    matchSoundtrack = true;
+                }
+                const contentMatch = matchApp || matchBundle || matchSoundtrack;
+                
+                return nameMatch && discountMatch && priceMatch && tagsMatch && platformMatch && vrMatch && contentMatch;
             });
 
             currentPage = 1;
@@ -933,6 +1092,41 @@
         }
 
         $(document).ready(() => {
+            $('#winFilter').change(function() {
+                platformFilters.win = $(this).is(':checked');
+                filterGames();
+            });
+            
+            $('#macFilter').change(function() {
+                platformFilters.mac = $(this).is(':checked');
+                filterGames();
+            });
+            
+            $('#linuxFilter').change(function() {
+                platformFilters.linux = $(this).is(':checked');
+                filterGames();
+            });
+            
+            $('#vrFilter').change(function() {
+                vrFilter = $(this).is(':checked');
+                filterGames();
+            });
+            
+            $('#appFilter').change(function() {
+                appFilter = $(this).is(':checked');
+                filterGames();
+            });
+
+            $('#bundleFilter').change(function() {
+                bundleFilter = $(this).is(':checked');
+                filterGames();
+            });
+            
+            $('#soundtrackFilter').change(function() {
+                soundtrackFilter = $(this).is(':checked');
+                filterGames();
+            });
+
             $.getJSON("./tags.json")
              .done(steamTags => {
                 allAvailableTags = steamTags;
@@ -955,7 +1149,13 @@
                         image: item[5],
                         numericPrice: price,
                         numericTags: item[6],
-                        tags: tags
+                        tags: tags,
+                        is_bundle: item[7],
+                        is_soundtrack: item[8],
+                        for_win: item[9],
+                        for_mac: item[10],
+                        for_linux: item[11],
+                        for_vr: item[12]
                     };
                 });
 
@@ -965,7 +1165,7 @@
 
                 $('#nameFilter').on('input', debouncedFilter);
             })
-            .fail(() => console.error('Error loading data')); 
+            .fail(() => console.error('Error loading data'));
         });
     </script>
 </body>
