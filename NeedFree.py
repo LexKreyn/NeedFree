@@ -64,7 +64,7 @@ def get_free_goods(start, append_list = False):
                     div.parent.parent.parent.parent.find(name="span", attrs={"class": "mac"}),  # for mac
                     div.parent.parent.parent.parent.find(name="span", attrs={"class": "linux"}),  # for linux
                     div.parent.parent.parent.parent.find(name="span", attrs={"class": "vr_supported"}),  # for vr_supported
-                    div.parent.parent.parent.parent.find(name="div", attrs={"class": "search_released"}).get_text(),  # release
+                    div.parent.parent.parent.parent.find(name="div", attrs={"class": "search_released"}),  # release
                     div.parent.parent.parent.parent.find(name="span", attrs={"class": "search_review_summary"}).get("data-tooltip-html")  # reviews
                 ] for div in full_discounts_div
             ]
@@ -75,6 +75,10 @@ def get_free_goods(start, append_list = False):
                     if sub_free[0] and sub_free[0] != '0':
                         if sub_free[1]:
                             sub_free[1] = sub_free[1].get_text()
+                        if sub_free[13]:
+                            sub_free[13] = sub_free[13].get_text()
+                        else:
+                            sub_free[13] = ''
                         counter += 1
                         sub_free[0] = int(sub_free[0])
                         free_list.put(sub_free)
