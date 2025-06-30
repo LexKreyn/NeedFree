@@ -39,6 +39,11 @@
             padding-bottom: 2rem;
         }
 
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+
         .container {
             max-width: 1600px;
             padding: 0 1rem;
@@ -383,6 +388,34 @@
             transform: translateY(-2px);
         }
 
+        .game-release {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .game-release i {
+            color: var(--text-muted);
+            width: 16px;
+            text-align: center;
+        }
+
+        .game-reviews {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .review-icon {
+            width: 16px;
+            height: 16px;
+        }
+
         .vr-badge {
             background: rgba(106, 53, 184, 0.3);
             color: #b39ddb;
@@ -405,11 +438,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 0.5rem;
-            margin-top: auto;
             padding-top: 1rem;
-            max-height: 80px;
-            overflow-y: auto;
-            padding-right: 5px;
         }
 
         .tags-container::-webkit-scrollbar {
@@ -739,6 +768,30 @@
 
             <div class="filter-group">
                 <div class="filter-group-title">
+                    <i class="fas fa-percent"></i>
+                    <span>Positive Reviews</span>
+                </div>
+                <div class="slider-group">
+                    <input type="number" class="form-control slider-input" id="minReviewPercent" placeholder="Min%">
+                    <div id="reviewPercentSlider" style="flex-grow:1;"></div>
+                    <input type="number" class="form-control slider-input" id="maxReviewPercent" placeholder="Max%">
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <div class="filter-group-title">
+                    <i class="fas fa-users"></i>
+                    <span>Number of Reviews</span>
+                </div>
+                <div class="slider-group">
+                    <input type="number" class="form-control slider-input" id="minReviewUsers" placeholder="Min">
+                    <div id="reviewUsersSlider" style="flex-grow:1;"></div>
+                    <input type="number" class="form-control slider-input" id="maxReviewUsers" placeholder="Max">
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <div class="filter-group-title">
                     <i class="fas fa-tags"></i>
                     <span>Tags</span>
                 </div>
@@ -837,6 +890,7 @@
         let selectedTags = [];
         let allAvailableTags = [];
         let modalEventHandlersAttached = false;
+        let reviewPercentSlider, reviewUsersSlider;
 
         const DEBOUNCE_DELAY = 500;
 
@@ -854,6 +908,56 @@
         let appFilter = true;
         let bundleFilter = true;
         let soundtrackFilter = true;
+
+        function getReviewIcon(score) {
+            const positive = 'https://store.fastly.steamstatic.com/public/images/v6/user_reviews_positive.png';
+            const mixed = 'https://store.fastly.steamstatic.com/public/images/v6/user_reviews_mixed.png';
+            const negative = 'https://store.fastly.steamstatic.com/public/images/v6/user_reviews_negative.png';
+            
+            const positiveScores = [
+                'Overwhelmingly Positive', 
+                'Very Positive', 
+                'Mostly Positive'
+            ];
+            
+            const negativeScores = [
+                'Mostly Negative',
+                'Overwhelmingly Negative',
+                'Very Negative',
+                'Negative'
+            ];
+            
+            return positiveScores.includes(score) 
+                ? positive 
+                : negativeScores.includes(score) 
+                    ? negative 
+                    : mixed;
+        }
+
+        function getReviewColor(score) {
+            const positiveColor = '#66c1f5';
+            const mixedColor = '#cbb181';
+            const negativeColor = '#c35b2c';
+            
+            const positiveScores = [
+                'Overwhelmingly Positive', 
+                'Very Positive', 
+                'Mostly Positive'
+            ];
+            
+            const negativeScores = [
+                'Mostly Negative',
+                'Overwhelmingly Negative',
+                'Very Negative',
+                'Negative'
+            ];
+            
+            return positiveScores.includes(score) 
+                ? positiveColor 
+                : negativeScores.includes(score) 
+                    ? negativeColor 
+                    : mixedColor;
+        }
 
         function getColor(percent) {
             percent = Math.max(1, Math.min(100, percent));
@@ -913,14 +1017,49 @@
                                 ${game.for_win ? '<img src="https://store.fastly.steamstatic.com/public/images/v6/icon_platform_win.png" class="platform-icon" title="Windows">' : ''}
                                 ${game.for_mac ? '<img src="https://store.fastly.steamstatic.com/public/images/v6/icon_platform_mac.png" class="platform-icon" title="Mac">' : ''}
                                 ${game.for_linux ? '<img src="https://store.fastly.steamstatic.com/public/images/v6/icon_platform_linux.png" class="platform-icon" title="Linux">' : ''}
-                                ${game.for_vr ? '<span class="vr-badge">VR</span>' : ''}
                             </div>
-                            <div class="content-type">
-                                ${game.is_bundle ? 'Bundle' : game.is_soundtrack ? 'Soundtrack' : 'App'}
+                            <div style="display: flex; flex-direction: row; align-items: center; gap: 0.5rem;">
+                                ${game.for_vr ? '<span class="vr-badge">VR</span>' : ''}
+                                <div class="content-type">
+                                    ${game.is_bundle ? 'Bundle' : game.is_soundtrack ? 'Soundtrack' : 'App'}
+                                </div>
                             </div>
                         </div>
+
+                        ${game.release ? `
+                        <div class="game-release">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>${game.release}</span>
+                        </div>
+                        ` : ''}
+
+                        ${game.review_users > 0 ? `
+                        <div class="game-reviews">
+                            <img src="${getReviewIcon(game.review_score)}" class="review-icon">
+                            <span class="review-text" style="color: ${getReviewColor(game.review_score)};">
+                                ${game.review_percent}% (${game.review_users})
+                            </span>
+                        </div>
+                        ` : ''}
                         
-                        ${tagsHTML}
+                        ${game.tags && game.tags.length > 0 ? `
+                            <div class="tags-container">
+                                ${game.tags.map(tag => {
+                                    const tagId = parseInt(Object.keys(allAvailableTags).find(
+                                        key => allAvailableTags[key] === tag
+                                    ));
+                                    const isSelected = selectedTags.includes(tagId);
+
+                                    let tagClass = 'game-tag';
+                                    if (selectedTags.length > 0) {
+                                        tagClass = isSelected ? 'game-tag game-tag-selected' : 'game-tag game-tag-not-selected';
+                                    }
+
+                                    return `<span class="${tagClass}">${tag}</span>`;
+                                }).join('')}
+                            </div>
+                        ` : ''}
+
                     </div>
                     <a href="${game.link}" class="stretched-link" target="_blank"></a>
                 `;
@@ -1039,8 +1178,33 @@
                 }
             });
 
+            reviewPercentSlider = noUiSlider.create(document.getElementById('reviewPercentSlider'), {
+                start: [0, 100],
+                connect: true,
+                range: { min: 0, max: 100 },
+                step: 1,
+                format: {
+                    to: value => Math.round(value),
+                    from: value => Number(value)
+                }
+            });
+
+            const maxReviewUsers = Math.max(1, ...allGames.map(g => g.review_users));
+            reviewUsersSlider = noUiSlider.create(document.getElementById('reviewUsersSlider'), {
+                start: [0, maxReviewUsers],
+                connect: true,
+                range: { min: 0, max: maxReviewUsers },
+                step: 1,
+                format: {
+                    to: value => Math.round(value),
+                    from: value => Number(value)
+                }
+            });
+
             setupSliderSync(discountSlider, 'minDiscount', 'maxDiscount');
             setupSliderSync(priceSlider, 'minPrice', 'maxPrice');
+            setupSliderSync(reviewPercentSlider, 'minReviewPercent', 'maxReviewPercent');
+            setupSliderSync(reviewUsersSlider, 'minReviewUsers', 'maxReviewUsers');
         }
 
         function setupSliderSync(slider, minId, maxId) {
@@ -1069,11 +1233,15 @@
             const searchText = $('#nameFilter').val().toLowerCase();
             const [minDiscount, maxDiscount] = discountSlider.get();
             const [minPrice, maxPrice] = priceSlider.get();
+            const [minReviewPercent, maxReviewPercent] = reviewPercentSlider.get();
+            const [minReviewUsers, maxReviewUsers] = reviewUsersSlider.get();
 
             filteredGames = allGames.filter(game => {
                 const nameMatch = game.name.toLowerCase().includes(searchText);
                 const discountMatch = game.discount >= minDiscount && game.discount <= maxDiscount;
                 const priceMatch = game.numericPrice >= minPrice && game.numericPrice <= maxPrice;
+                const reviewPercentMatch = game.review_percent >= minReviewPercent && game.review_percent <= maxReviewPercent;
+                const reviewUsersMatch = game.review_users >= minReviewUsers && game.review_users <= maxReviewUsers;
                 
                 let tagsMatch = true;
                 if (selectedTags.length > 0) {
@@ -1104,7 +1272,7 @@
                 }
                 const contentMatch = matchApp || matchBundle || matchSoundtrack;
                 
-                return nameMatch && discountMatch && priceMatch && tagsMatch && platformMatch && vrMatch && contentMatch;
+                return nameMatch && discountMatch && priceMatch && tagsMatch && platformMatch && vrMatch && contentMatch && reviewPercentMatch && reviewUsersMatch;
             });
 
             currentPage = 1;
@@ -1302,7 +1470,7 @@
              .done(data => {
                 $('#uptime').text(data.update_time);
                 allGames = data.free_list.map(item => {
-                    const price = item[2].toLowerCase() === 'free' ? 0 : parseFloat(item[2].replace(/[^\d.]/g, '')) || 0;
+                    const price = item[2].toLowerCase() === 'free' ? 0 : parseFloat(item[2].replace(/[^\d.]/g, '')) / 100 || 0;
                     const tags = item[6].map(id => allAvailableTags[id]);
 
                     return {
@@ -1320,7 +1488,11 @@
                         for_win: item[9],
                         for_mac: item[10],
                         for_linux: item[11],
-                        for_vr: item[12]
+                        for_vr: item[12],
+                        release: item[13],
+                        review_score: item[14][0],
+                        review_percent: item[14][1],
+                        review_users: item[14][2],
                     };
                 });
 
