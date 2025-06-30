@@ -1,4 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
+import traceback
 import requests
 import datetime
 import queue
@@ -65,7 +66,7 @@ def get_free_goods(start, append_list = False):
                     div.parent.parent.parent.parent.find(name="span", attrs={"class": "linux"}),  # for linux
                     div.parent.parent.parent.parent.find(name="span", attrs={"class": "vr_supported"}),  # for vr_supported
                     div.parent.parent.parent.parent.find(name="div", attrs={"class": "search_released"}),  # release
-                    div.parent.parent.parent.parent.find(name="span", attrs={"class": "search_review_summary"}).get("data-tooltip-html")  # reviews
+                    div.parent.parent.parent.parent.find(name="span", attrs={"class": "search_review_summary"})  # reviews
                 ] for div in full_discounts_div
             ]
 
@@ -79,6 +80,10 @@ def get_free_goods(start, append_list = False):
                             sub_free[13] = sub_free[13].get_text()
                         else:
                             sub_free[13] = ''
+                        if sub_free[14]:
+                            sub_free[14] = sub_free[14].get("data-tooltip-html")
+                        else:
+                            sub_free[14] = r'None<br>0% of the 0'
                         counter += 1
                         sub_free[0] = int(sub_free[0])
                         free_list.put(sub_free)
@@ -87,6 +92,7 @@ def get_free_goods(start, append_list = False):
         except Exception as e:
             print("get_free_goods: error on start = %d, remain retry %d time(s)" % (start, retry_time))
             print(e)
+            print(traceback.format_exc())
             retry_time -= 1
     print("get_free_goods: error on start = %d, throw" % (start))
 
@@ -144,10 +150,10 @@ while not free_list.empty():
 
     reviews = free_item[14]
     if reviews is None:
-        reviews = r'None&lt;br&gt;0% of the 0'
+        reviews = r'None<br>0% of the 0'
     reviews = re.search(r'^([a-zA-Z ]+)\<br\>(\d{1,3})% of the ([\d,]+)', reviews)
     if reviews is None:
-        review, percent, users = '-', '0', '0'
+        review, percent, users = 'None', '0', '0'
     else:
         review, percent, users = reviews.groups()
     free_item[14] = [review, int(percent), int(users.replace(',' ,''))]
