@@ -51,7 +51,7 @@ def get_free_goods(start, append_list = False):
             full_discounts_div = page_parser.find_all(name = "div", attrs = {"class":"search_discount_block"})
             sub_free_list = [
                 [
-                    div.parent.parent.parent.parent.find(name="div", attrs={"class": "search_discount_block"}).get('data-discount'),  # discount
+                    div.parent.parent.parent.parent.find(name="div", attrs={"class": "search_discount_block"}).get("data-discount"),  # discount
                     div.parent.parent.parent.parent.find(name="div", attrs={"class": "discount_original_price"}),  # full price
                     div.parent.parent.parent.parent.find(name="div", attrs={"class": "discount_final_price"}).get_text(),  # price with discount
                     div.parent.parent.parent.parent.find(name="span", attrs={"class": "title"}).get_text(),  # title
@@ -64,6 +64,8 @@ def get_free_goods(start, append_list = False):
                     div.parent.parent.parent.parent.find(name="span", attrs={"class": "mac"}),  # for mac
                     div.parent.parent.parent.parent.find(name="span", attrs={"class": "linux"}),  # for linux
                     div.parent.parent.parent.parent.find(name="span", attrs={"class": "vr_supported"}),  # for vr_supported
+                    div.parent.parent.parent.parent.find(name="div", attrs={"class": "search_released"}).get_text(),  # release
+                    div.parent.parent.parent.parent.find(name="span", attrs={"class": "search_review_summary"}).get("data-tooltip-html")  # reviews
                 ] for div in full_discounts_div
             ]
 
@@ -132,6 +134,19 @@ while not free_list.empty():
 
     for_vr = free_item[12]
     free_item[12] = bool(for_vr)
+
+    release = free_item[13]
+    free_item[13] = release.strip() or ''
+
+    reviews = free_item[14]
+    if reviews is None:
+        reviews = r'None&lt;br&gt;0% of the 0'
+    reviews = re.search(r'^([a-zA-Z ]+)\<br\>(\d{1,3})% of the ([\d,]+)', reviews)
+    if reviews is None:
+        review, percent, users = '-', '0', '0'
+    else:
+        review, percent, users = reviews.groups()
+    free_item[14] = [review, int(percent), int(users.replace(',' ,''))]
 
     free_ids.add(game_id)
     final_free_list.append(free_item)
