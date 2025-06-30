@@ -1470,7 +1470,7 @@
              .done(data => {
                 $('#uptime').text(data.update_time);
                 allGames = data.free_list.map(item => {
-                    const price = item[2].toLowerCase() === 'free' ? 0 : parseFloat(item[2].replace(/[^\d.]/g, '')) / 100 || 0;
+                    const price = item[2].toLowerCase() === 'free' ? 0 : parseFloat(item[2].replace(/[^\d.]/g, '')) || 0;
                     const tags = item[6].map(id => allAvailableTags[id]);
 
                     return {
