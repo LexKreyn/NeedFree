@@ -1212,7 +1212,7 @@
             pagination.append(paginationList);
         }
 
-        function initSliders(maxPrice) {
+        function initSliders(maxPrice, maxReviewUsers) {
             discountSlider = noUiSlider.create(document.getElementById('discountSlider'), {
                 start: [0, 100],
                 connect: true,
@@ -1247,7 +1247,6 @@
                 }
             });
 
-            const maxReviewUsers = Math.max(1, ...allGames.map(g => g.review_users));
             reviewUsersSlider = noUiSlider.create(document.getElementById('reviewUsersSlider'), {
                 start: [0, maxReviewUsers],
                 connect: true,
@@ -1527,9 +1526,14 @@
             $.getJSON("./free_goods_detail.json")
              .done(data => {
                 $('#uptime').text(data.update_time);
+                var maxPrice = 0;
+                var maxReviewUsers = 0;
                 allGames = data.free_list.map(item => {
-                    const price = item[3].toLowerCase() === 'free' ? 0 : parseFloat(item[3].replace(/[^\d.]/g, '')) / 100 || 0;
+                    const price = item[3].toLowerCase() === 'free' ? 0 : parseFloat(item[3].replace(/[^\d.]/g, '')) || 0;
                     const tags = item[7].map(id => allAvailableTags[id]);
+
+                    maxPrice = Math.max(maxPrice, price);
+                    maxReviewUsers = Math.max(maxReviewUsers, item[16][2]);
 
                     return {
                         id: item[0],
@@ -1556,8 +1560,7 @@
                     };
                 });
 
-                const maxPrice = Math.ceil(Math.max(...allGames.map(g => g.numericPrice))) || 100;
-                initSliders(maxPrice);
+                initSliders(maxPrice, maxReviewUsers);
                 filterGames();
                 $('#nameFilter').on('input', debouncedFilter);
             })
