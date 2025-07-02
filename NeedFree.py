@@ -51,56 +51,56 @@ def get_free_goods(start, append_list = False):
             page_parser = bs4.BeautifulSoup(goods_html, "html.parser")
             full_discounts_div = page_parser.find_all(name = "div", attrs = {"class":"search_discount_block"})
             sub_free_list = [
-                [
-                    None,
-                    div.parent.parent.parent.parent.find(name="div", attrs={"class": "search_discount_block"}).get("data-discount"),  # discount
-                    div.parent.parent.parent.parent.find(name="div", attrs={"class": "discount_original_price"}),  # full price
-                    div.parent.parent.parent.parent.find(name="div", attrs={"class": "discount_final_price"}).get_text(),  # price with discount
-                    div.parent.parent.parent.parent.find(name="span", attrs={"class": "title"}).get_text(),  # title
-                    div.parent.parent.parent.parent.get("href"),  # link
-                    div.parent.parent.parent.parent.find_all("div")[0].find("img").get("src"),  # image
-                    div.parent.parent.parent.parent.get("data-ds-tagids"),  # tags
-                    div.parent.parent.parent.parent.get("data-ds-bundleid"),  # is_bundle
-                    div.parent.parent.parent.parent.get("data-ds-bundle-data"),  # bundle_data
-                    div.parent.parent.parent.parent.find(name="span", attrs={"class": "music"}),  # is_soundtrack
-                    div.parent.parent.parent.parent.find(name="span", attrs={"class": "win"}),  # for win
-                    div.parent.parent.parent.parent.find(name="span", attrs={"class": "mac"}),  # for mac
-                    div.parent.parent.parent.parent.find(name="span", attrs={"class": "linux"}),  # for linux
-                    div.parent.parent.parent.parent.find(name="span", attrs={"class": "vr_supported"}),  # for vr_supported
-                    div.parent.parent.parent.parent.find(name="div", attrs={"class": "search_released"}),  # release
-                    div.parent.parent.parent.parent.find(name="span", attrs={"class": "search_review_summary"})  # reviews
-                ] for div in full_discounts_div
+                {
+                    'id': None,
+                    'popularity': start + idx,
+                    'discount': div.parent.parent.parent.parent.find(name="div", attrs={"class": "search_discount_block"}).get("data-discount"),
+                    'price': div.parent.parent.parent.parent.find(name="div", attrs={"class": "discount_original_price"}),
+                    'price_final': div.parent.parent.parent.parent.find(name="div", attrs={"class": "discount_final_price"}).get_text(),
+                    'title': div.parent.parent.parent.parent.find(name="span", attrs={"class": "title"}).get_text(),
+                    'link': div.parent.parent.parent.parent.get("href"),
+                    'image': div.parent.parent.parent.parent.find_all("div")[0].find("img").get("src"),
+                    'tags': div.parent.parent.parent.parent.get("data-ds-tagids"),
+                    'is_bundle': div.parent.parent.parent.parent.get("data-ds-bundleid"),
+                    'bundle_data': div.parent.parent.parent.parent.get("data-ds-bundle-data"),
+                    'is_soundtrack': div.parent.parent.parent.parent.find(name="span", attrs={"class": "music"}),
+                    'for_win': div.parent.parent.parent.parent.find(name="span", attrs={"class": "win"}),
+                    'for_mac': div.parent.parent.parent.parent.find(name="span", attrs={"class": "mac"}),
+                    'for_linux': div.parent.parent.parent.parent.find(name="span", attrs={"class": "linux"}),
+                    'vr_support': div.parent.parent.parent.parent.find(name="span", attrs={"class": "vr_supported"}),
+                    'release': div.parent.parent.parent.parent.find(name="div", attrs={"class": "search_released"}),
+                    'reviews': div.parent.parent.parent.parent.find(name="span", attrs={"class": "search_review_summary"})
+                } for idx, div in enumerate(full_discounts_div)
             ]
 
             counter = 0
             if append_list:
                 for sub_free in sub_free_list:
-                    if not sub_free[1]:
-                        sub_free[1] = '0'
+                    if not sub_free['discount']:
+                        sub_free['discount'] = '0'
 
-                    if sub_free[2]:
-                        sub_free[2] = sub_free[2].get_text()
+                    if sub_free['price']:
+                        sub_free['price'] = sub_free['price'].get_text()
                     else:
-                        sub_free[2] = ''
+                        sub_free['price'] = ''
 
-                    if sub_free[3] == 'Free':
-                        sub_free[3] = '0'
+                    if sub_free['price_final'] == 'Free':
+                        sub_free['price_final'] = '0'
 
-                    if not sub_free[2]:
-                        sub_free[2] = sub_free[3]
+                    if not sub_free['price']:
+                        sub_free['price'] = sub_free['price_final']
 
-                    if sub_free[15]:
-                        sub_free[15] = sub_free[15].get_text()
+                    if sub_free['release']:
+                        sub_free['release'] = sub_free['release'].get_text()
                     else:
-                        sub_free[15] = ''
+                        sub_free['release'] = ''
 
-                    if sub_free[16]:
-                        sub_free[16] = sub_free[16].get("data-tooltip-html")
+                    if sub_free['reviews']:
+                        sub_free['reviews'] = sub_free['reviews'].get("data-tooltip-html")
                     else:
-                        sub_free[16] = r'None<br>0% of the 0'
+                        sub_free['reviews'] = r'None<br>0% of the 0'
 
                     counter += 1
-                    sub_free[1] = int(sub_free[1])
                     free_list.put(sub_free)
 
             return goods_count
@@ -124,14 +124,12 @@ futures = [threads.submit(get_free_goods, index, True) for index in range(0, tot
 wait(futures, return_when=ALL_COMPLETED)
 
 # Process free list
-final_free_list = []
+final_free_list = list()
 free_ids = set()
 while not free_list.empty():
     free_item = free_list.get()
 
-    game_link = free_item[5]
-
-    game_id = re.search(r'.com\/[a-z]+\/(\d+)\/', game_link)
+    game_id = re.search(r'.com\/[a-z]+\/(\d+)\/', free_item['link'])
     if game_id is None:
         continue
 
@@ -139,49 +137,29 @@ while not free_list.empty():
     if game_id in free_ids:
         continue
 
-    free_item[0] = game_id
+    free_item['id'] = game_id
 
-    game_tags = free_item[7]
-    free_item[7] = json.loads(game_tags or '[]')
+    free_item['tags'] = json.loads(free_item['tags'] or '[]')
+    free_item['bundle_data'] = json.loads(free_item['bundle_data'] or r'{}')
 
-    is_bundle = free_item[8]
-    free_item[8] = bool(is_bundle)
+    free_item['discount'] = int(free_item['discount'])
 
-    bundle_data = free_item[9]
-    free_item[9] = json.loads(bundle_data or r'{}')
+    free_item['is_bundle'] = bool(free_item['is_bundle'])
+    free_item['is_soundtrack'] = bool(free_item['is_soundtrack'])
+    free_item['for_win'] = bool(free_item['for_win'])
+    free_item['for_mac'] = bool(free_item['for_mac'])
+    free_item['for_linux'] = bool(free_item['for_linux'])
+    free_item['vr_support'] = bool(free_item['vr_support'])
 
-    is_soundtrack = free_item[10]
-    free_item[10] = bool(is_soundtrack)
+    free_item['release'] = free_item['release'].strip() or ''
 
-    for_win = free_item[11]
-    free_item[11] = bool(for_win)
-
-    for_mac = free_item[12]
-    free_item[12] = bool(for_mac)
-
-    for_linux = free_item[13]
-    free_item[13] = bool(for_linux)
-
-    for_vr = free_item[14]
-    free_item[14] = bool(for_vr)
-
-    release = free_item[15]
-    free_item[15] = release.strip() or ''
-
-    reviews = free_item[16]
-    if reviews is None:
-        reviews = r'None<br>0% of the 0'
-    reviews = re.search(r'^([a-zA-Z ]+)\<br\>(\d{1,3})% of the ([\d,]+)', reviews)
-    if reviews is None:
-        review, percent, users = 'None', '0', '0'
-    else:
-        review, percent, users = reviews.groups()
-    free_item[16] = [review, int(percent), int(users.replace(',' ,''))]
+    score, percent, users = re.search(r'^([a-zA-Z ]+)\<br\>(\d{1,3})% of the ([\d,]+)', free_item['reviews']).groups()
+    free_item['review_score'] = score
+    free_item['review_percent'] = int(percent)
+    free_item['review_users'] = int(users.replace(',' ,''))
 
     free_ids.add(game_id)
     final_free_list.append(free_item)
-
-final_free_list = sorted_data = sorted(final_free_list, key=lambda x: (-x[1], x[4]))
 
 with open("free_goods_detail.json", "w", encoding="utf-8") as fp:
     json.dump({
