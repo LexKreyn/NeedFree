@@ -694,6 +694,67 @@
             100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
         }
     </style>
+    <style>
+        .bundle-games-container {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .bundle-games-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--accent-secondary);
+        }
+
+        .bundle-games {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .bundle-game {
+            position: relative;
+            width: 120px;
+            height: 45  px;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            transition: var(--transition);
+        }
+
+        .bundle-game:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        .bundle-game img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .bundle-game .bundle-game-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-size: 10px;
+            padding: 3px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: none;
+        }
+
+        .bundle-game:hover .bundle-game-name {
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <!-- Google tag (gtag.js) -->
@@ -927,11 +988,7 @@
                 'Negative'
             ];
             
-            return positiveScores.includes(score) 
-                ? positive 
-                : negativeScores.includes(score) 
-                    ? negative 
-                    : mixed;
+            return positiveScores.includes(score) ? positive : negativeScores.includes(score) ? negative : mixed;
         }
 
         function getReviewColor(score) {
@@ -952,11 +1009,7 @@
                 'Negative'
             ];
             
-            return positiveScores.includes(score) 
-                ? positiveColor 
-                : negativeScores.includes(score) 
-                    ? negativeColor 
-                    : mixedColor;
+            return positiveScores.includes(score) ? positiveColor : negativeScores.includes(score) ? negativeColor : mixedColor;
         }
 
         function getColor(percent) {
@@ -978,23 +1031,27 @@
                 
                 const discountColor = getColor(game.discount);
                 
-                let tagsHTML = '';
-                if (game.tags && game.tags.length > 0) {
-                    tagsHTML = `
-                        <div class="tags-container">
-                            ${game.tags.map(tag => {
-                                const tagId = parseInt(Object.keys(allAvailableTags).find(
-                                    key => allAvailableTags[key] === tag
-                                ));
-                                const isSelected = selectedTags.includes(tagId);
+                let bundleGamesHTML = '';
+                if (game.is_bundle && game.bundle_data && game.bundle_data.m_rgItems) {
+                    bundleGamesHTML = `
+                        <div class="bundle-games-container">
+                            <div class="bundle-games-title">Includes ${game.bundle_data.m_rgItems.length} games:</div>
+                            <div class="bundle-games">
+                                ${game.bundle_data.m_rgItems.map(item => {
+                                    const appID = item.m_rgIncludedAppIDs[0];
+                                    const discount = Math.round((1 - item.m_nFinalPriceInCents / item.m_nBasePriceInCents) * 100);
 
-                                let tagClass = 'game-tag';
-                                if (selectedTags.length > 0) {
-                                    tagClass = isSelected ? 'game-tag game-tag-selected' : 'game-tag game-tag-not-selected';
-                                }
+                                    const foundGame = allGames.find(game => game.id === appID);
 
-                                return `<span class="${tagClass}">${tag}</span>`;
-                            }).join('')}
+                                    if (foundGame === undefined) { return ``; }
+                                    return `
+                                        <div class="bundle-game">
+                                            <img src="${foundGame.image}" alt="${foundGame.name}">
+                                            <span class="bundle-game-name">${foundGame.name} -${discount}%</span>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
                         </div>
                     `;
                 }
@@ -1060,6 +1117,7 @@
                             </div>
                         ` : ''}
 
+                        ${bundleGamesHTML}
                     </div>
                     <a href="${game.link}" class="stretched-link" target="_blank"></a>
                 `;
@@ -1470,29 +1528,32 @@
              .done(data => {
                 $('#uptime').text(data.update_time);
                 allGames = data.free_list.map(item => {
-                    const price = item[2].toLowerCase() === 'free' ? 0 : parseFloat(item[2].replace(/[^\d.]/g, '')) || 0;
-                    const tags = item[6].map(id => allAvailableTags[id]);
+                    console.log(item);
+                    const price = item[3].toLowerCase() === 'free' ? 0 : parseFloat(item[3].replace(/[^\d.]/g, '')) / 100 || 0;
+                    const tags = item[7].map(id => allAvailableTags[id]);
 
                     return {
-                        discount: item[0],
-                        originalPrice: item[1],
-                        discountPrice: item[2],
-                        name: item[3],
-                        link: item[4],
-                        image: item[5],
+                        id: item[0],
+                        discount: item[1],
+                        originalPrice: item[2],
+                        discountPrice: item[3],
+                        name: item[4],
+                        link: item[5],
+                        image: item[6],
                         numericPrice: price,
-                        numericTags: item[6],
+                        numericTags: item[7],
                         tags: tags,
-                        is_bundle: item[7],
-                        is_soundtrack: item[8],
-                        for_win: item[9],
-                        for_mac: item[10],
-                        for_linux: item[11],
-                        for_vr: item[12],
-                        release: item[13],
-                        review_score: item[14][0],
-                        review_percent: item[14][1],
-                        review_users: item[14][2],
+                        is_bundle: item[8],
+                        bundle_data: item[9],
+                        is_soundtrack: item[10],
+                        for_win: item[11],
+                        for_mac: item[12],
+                        for_linux: item[13],
+                        for_vr: item[14],
+                        release: item[15],
+                        review_score: item[16][0],
+                        review_percent: item[16][1],
+                        review_users: item[16][2],
                     };
                 });
 
