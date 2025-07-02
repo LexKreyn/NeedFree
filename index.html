@@ -800,6 +800,117 @@
             border-color: var(--accent-primary);
         }
     </style>
+    <style>
+        .btn, .page-link, .github-link, .filter-tag {
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            transform-origin: center;
+        }
+
+        .btn:active, .page-link:active, .filter-tag:active {
+            transform: scale(0.95);
+        }
+
+        .game-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        @keyframes tagPop {
+            0% { transform: scale(0.8); opacity: 0; }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .filter-tag {
+            animation: tagPop 0.3s ease forwards;
+        }
+
+        i.fas {
+            transition: transform 0.3s ease;
+        }
+
+        .platform-icon:hover, 
+        .filter-group-title i:hover, 
+        .game-name:hover + i {
+            animation: float 1.5s ease-in-out infinite;
+        }
+
+        .form-select {
+            transition: all 0.3s ease;
+            transform-origin: top;
+        }
+
+        .form-select:focus {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
+        }
+
+        .form-control {
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-link {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .page-link:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.25);
+        }
+
+        .noUi-handle {
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .noUi-handle:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 12px rgba(76, 175, 80, 0.6);
+        }
+    </style>
+    <style>
+        @keyframes countPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .total-count {
+            transition: all 0.3s ease;
+        }
+
+        .total-count.updated {
+            animation: countPulse 0.5s ease;
+        }
+
+        @keyframes filterFlash {
+            0% { background: transparent; }
+            50% { background: rgba(76, 175, 80, 0.3); }
+            100% { background: transparent; }
+        }
+
+        .filter-group.updated {
+            animation: filterFlash 1s ease;
+        }
+
+        .fa-tags.pulse {
+            animation: spin 4s linear infinite, pulse 2s infinite;
+        }
+
+        .modal.fade .modal-content {
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
     <!-- Google tag (gtag.js) -->
@@ -1195,6 +1306,15 @@
                             <span class="review-text" style="color: ${getReviewColor(game.review_score)};">
                                 ${game.review_percent}% (${game.review_users})
                             </span>
+                            <div class="review-bar mt-2">
+                                <div class="progress" style="height: 6px; background: rgba(255,255,255,0.1)">
+                                    <div class="progress-bar" role="progressbar" style="width: ${game.review_percent}%; background: ${getReviewColor(game.review_score)}">
+                                </div>
+                            </div>
+                                <div class="d-flex justify-content-between mt-1">
+                                    <small>${game.review_percent}% positive of ${game.review_users} reviews</small>
+                                </div>
+                            </div>
                         </div>
                         ` : ''}
                         
