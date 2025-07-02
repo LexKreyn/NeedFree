@@ -10,7 +10,7 @@ import bs4
 import re
 
 
-API_URL_TEMPLATE = "https://store.steampowered.com/search/results/?query&start={pos}&count=100&infinite=1"
+API_URL_TEMPLATE = "https://store.steampowered.com/search/results/?query&start={pos}&count=100&hidef2p=1&infinite=1"
 THREAD_CNT = 8
 
 free_list = queue.Queue()
@@ -75,23 +75,38 @@ def get_free_goods(start, append_list = False):
             counter = 0
             if append_list:
                 for sub_free in sub_free_list:
-                    if sub_free[1] and sub_free[1] != '0':
-                        if sub_free[2]:
-                            sub_free[2] = sub_free[2].get_text()
+                    print(sub_free)
+                    if not sub_free[1]:
+                        sub_free[1] = '0'
 
-                        if sub_free[15]:
-                            sub_free[15] = sub_free[15].get_text()
-                        else:
-                            sub_free[15] = ''
+                    if sub_free[2]:
+                        sub_free[2] = sub_free[2].get_text()
+                    else:
+                        sub_free[2] = ''
 
-                        if sub_free[16]:
-                            sub_free[16] = sub_free[16].get("data-tooltip-html")
-                        else:
-                            sub_free[16] = r'None<br>0% of the 0'
+                    if sub_free[3] == 'Free':
+                        sub_free[3] = '0'
 
-                        counter += 1
-                        sub_free[1] = int(sub_free[1])
-                        free_list.put(sub_free)
+                    if not sub_free[2]:
+                        sub_free[2] = sub_free[3]
+
+                    if sub_free[15]:
+                        sub_free[15] = sub_free[15].get_text()
+                    else:
+                        sub_free[15] = ''
+
+                    if sub_free[16]:
+                        sub_free[16] = sub_free[16].get("data-tooltip-html")
+                    else:
+                        sub_free[16] = r'None<br>0% of the 0'
+
+                    print(sub_free)
+                    print()
+                    print()
+                    print()
+                    counter += 1
+                    sub_free[1] = int(sub_free[1])
+                    free_list.put(sub_free)
 
             return goods_count
         except Exception as e:
@@ -118,6 +133,7 @@ final_free_list = []
 free_ids = set()
 while not free_list.empty():
     free_item = free_list.get()
+    print(free_item)
 
     game_link = free_item[5]
 
