@@ -1522,6 +1522,7 @@
 
                 $('body').on('click', '.modal-tag:not(.modal-tag-selected)', function() {
                     const tagId = parseInt($(this).data('tag'));
+                    console.log(selectedTags);
                     if (!selectedTags.includes(tagId)) {
                         selectedTags.push(tagId);
                         $(this)
@@ -1578,6 +1579,17 @@
                 selectedTags = selectedTags.filter(id => id !== tagId);
                 filterGames();
             });
+
+            $('.modal-tag-selected').on('click', function(e) {
+                if (!$(this).hasClass('modal-tag-selected')) { return; }
+                e.stopPropagation();
+                const tagId = $(this).data('tag');
+                selectedTags = selectedTags.filter(id => id !== tagId);
+                filterGames();
+
+                $(this).removeClass('modal-tag-selected');
+                $(this).children()[0].remove()
+            })
 
             $('#addTagButton').on('click', showTagModal);
         }
@@ -1660,6 +1672,7 @@
                 filterGames();
                 $('#nameFilter').on('input', debouncedFilter);
 
+                window.scrollTo(0, 0);
                 $('.loading').fadeOut();
                 $(document.body).css('overflow', 'auto');
             })
