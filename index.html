@@ -37,6 +37,7 @@
             line-height: 1.6;
             min-height: 100vh;
             padding-bottom: 2rem;
+            overflow: hidden;
         }
 
         input::-webkit-outer-spin-button,
@@ -755,6 +756,24 @@
             display: block;
         }
     </style>
+    <style>
+        .loading {
+            top: 0;
+            left: 0;
+            z-index: 999999;
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #0e0e0e;
+        }
+
+        .loading-gif {
+            width: 20%;
+        }
+    </style>
 </head>
 <body>
     <!-- Google tag (gtag.js) -->
@@ -784,6 +803,10 @@
     <noscript><div><img src="https://mc.yandex.ru/watch/101470207" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
     <!-- /Yandex.Metrika counter -->
     <div class="container">
+        <div class="loading">
+            <img class="loading-gif" src="loading.gif" />
+            <!-- <span>Loading...</span> -->
+        </div>
         <header class="app-header">
             <div class="app-title">
                 <i class="fas fa-tags pulse"></i>
@@ -1563,6 +1586,9 @@
                 initSliders(maxPrice, maxReviewUsers);
                 filterGames();
                 $('#nameFilter').on('input', debouncedFilter);
+
+                $('.loading').fadeOut();
+                $(document.body).css('overflow', 'auto');
             })
             .fail(() => console.error('Error loading games data'));
         });
