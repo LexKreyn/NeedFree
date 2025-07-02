@@ -1528,7 +1528,6 @@
              .done(data => {
                 $('#uptime').text(data.update_time);
                 allGames = data.free_list.map(item => {
-                    console.log(item);
                     const price = item[3].toLowerCase() === 'free' ? 0 : parseFloat(item[3].replace(/[^\d.]/g, '')) / 100 || 0;
                     const tags = item[7].map(id => allAvailableTags[id]);
 
