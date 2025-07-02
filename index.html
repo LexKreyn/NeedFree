@@ -775,6 +775,31 @@
             width: 20%;
         }
     </style>
+    <style>
+        .form-select {
+            background-color: rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .form-select option {
+            background-color: #2b2a2a;
+        }
+
+        .form-select option:checked {
+            background-color: #363636;
+        }
+
+        .form-select option:hover {
+            background-color: #484848;
+        }
+
+        .sort-direction.active {
+            background-color: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+    </style>
 </head>
 <body>
     <!-- Google tag (gtag.js) -->
@@ -943,8 +968,34 @@
                     <label class="additional-filter">
                         <input type="checkbox" id="vrFilter">
                         <i class="fas fa-vr-cardboard"></i>
-                        <span>VR Only</span>
+                        <span>VR Support</span>
                     </label>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <div class="filter-group-title">
+                    <i class="fas fa-sort"></i>
+                    <span>Sort By</span>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <select class="form-select" id="sortField">
+                        <option value="popularity" selected>Popularity</option>
+                        <option value="title">Title</option>
+                        <option value="discount">Discount</option>
+                        <option value="base_price">Base Price</option>
+                        <option value="final_price">Final Price</option>
+                        <option value="review_users">Review Count</option>
+                        <option value="review_percent">Positive Reviews</option>
+                    </select>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-secondary sort-direction active" data-direction="desc">
+                            <i class="fas fa-arrow-down-wide-short"></i> Desc
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary sort-direction" data-direction="asc">
+                            <i class="fas fa-arrow-up-wide-short"></i> Asc
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -993,6 +1044,30 @@
         let appFilter = true;
         let bundleFilter = true;
         let soundtrackFilter = true;
+        
+        let sortField = 'popularity';
+        let sortDirection = 'desc';
+        const sortFunctions = {
+            'popularity': (a, b) => b.popularity - a.popularity,
+            'title': (a, b) => a.title.localeCompare(b.title),
+            'discount': (a, b) => b.discount - a.discount,
+            'base_price': (a, b) => b.base_price_numeric - a.base_price_numeric,
+            'final_price': (a, b) => a.price_numeric - b.price_numeric,
+            'review_users': (a, b) => b.review_users - a.review_users,
+            'review_percent': (a, b) => b.review_percent - a.review_percent
+        };
+
+        function applySorting(games) {
+            const sorted = [...games];
+            const comparator = sortFunctions[sortField];
+            
+            sorted.sort(comparator);
+            
+            if (sortDirection === (sortField !== 'popularity' ? 'asc' : 'desc')) {
+                return sorted.reverse();
+            }
+            return sorted;
+        }
 
         function getReviewIcon(score) {
             const positive = 'https://store.fastly.steamstatic.com/public/images/v6/user_reviews_positive.png';
@@ -1070,8 +1145,8 @@
                                     if (foundGame === undefined) { return ``; }
                                     return `
                                         <div class="bundle-game">
-                                            <img src="${foundGame.image}" alt="${foundGame.name}">
-                                            <span class="bundle-game-name">${foundGame.name} -${discount}%</span>
+                                            <img src="${foundGame.image}" alt="${foundGame.title}">
+                                            <span class="bundle-game-name">${foundGame.title} -${discount}%</span>
                                         </div>
                                     `;
                                 }).join('')}
@@ -1083,15 +1158,15 @@
                 gameCard.innerHTML = `
                     <div class="game-header" style="background: linear-gradient(90deg, ${discountColor} 0%, #1e1e1e 100%)">
                         <div class="game-image-container">
-                            <img class="game-image" src="${game.image}" alt="${game.name}">
+                            <img class="game-image" src="${game.image}" alt="${game.title}">
                         </div>
                         <div class="game-discount-container">
                             <div class="game-discount">-${game.discount}%</div>
-                            <div class="game-price">${game.originalPrice} → ${game.discountPrice}</div>
+                            <div class="game-price">${game.price} → ${game.price_final}</div>
                         </div>
                     </div>
                     <div class="game-body">
-                        <h3 class="game-name">${game.name}</h3>
+                        <h3 class="game-name">${game.title}</h3>
                         
                         <div class="game-meta">
                             <div class="platform-icons">
@@ -1100,7 +1175,7 @@
                                 ${game.for_linux ? '<img src="https://store.fastly.steamstatic.com/public/images/v6/icon_platform_linux.png" class="platform-icon" title="Linux">' : ''}
                             </div>
                             <div style="display: flex; flex-direction: row; align-items: center; gap: 0.5rem;">
-                                ${game.for_vr ? '<span class="vr-badge">VR</span>' : ''}
+                                ${game.vr_support ? '<span class="vr-badge">VR</span>' : ''}
                                 <div class="content-type">
                                     ${game.is_bundle ? 'Bundle' : game.is_soundtrack ? 'Soundtrack' : 'App'}
                                 </div>
@@ -1318,17 +1393,17 @@
             const [minReviewUsers, maxReviewUsers] = reviewUsersSlider.get();
 
             filteredGames = allGames.filter(game => {
-                const nameMatch = game.name.toLowerCase().includes(searchText);
+                const nameMatch = game.title.toLowerCase().includes(searchText);
                 const discountMatch = game.discount >= minDiscount && game.discount <= maxDiscount;
-                const priceMatch = game.numericPrice >= minPrice && game.numericPrice <= maxPrice;
+                const priceMatch = game.price_numeric >= minPrice && game.price_numeric <= maxPrice;
                 const reviewPercentMatch = game.review_percent >= minReviewPercent && game.review_percent <= maxReviewPercent;
                 const reviewUsersMatch = game.review_users >= minReviewUsers && game.review_users <= maxReviewUsers;
                 
                 let tagsMatch = true;
                 if (selectedTags.length > 0) {
-                    if (!game.tags || !game.numericTags) return false;
+                    if (!game.tags || !game.tags_numeric) return false;
                     tagsMatch = selectedTags.every(tagId => 
-                        game.numericTags.includes(tagId)
+                        game.tags_numeric.includes(tagId)
                     );
                 }
                 
@@ -1337,7 +1412,7 @@
                     (!platformFilters.mac || game.for_mac) &&
                     (!platformFilters.linux || game.for_linux);
                 
-                const vrMatch = !vrFilter || game.for_vr;
+                const vrMatch = !vrFilter || game.vr_support;
                 
                 let matchApp = false;
                 let matchBundle = false;
@@ -1355,6 +1430,8 @@
                 
                 return nameMatch && discountMatch && priceMatch && tagsMatch && platformMatch && vrMatch && contentMatch && reviewPercentMatch && reviewUsersMatch;
             });
+
+            filteredGames = applySorting(filteredGames);
 
             currentPage = 1;
             renderGames(filteredGames, currentPage);
@@ -1541,6 +1618,19 @@
                 filterGames();
             });
 
+            $('#sortField').change(function() {
+                sortField = $(this).val();
+                filterGames();
+            });
+
+            $('.sort-direction').click(function() {
+                $('.sort-direction').removeClass('active');
+                $(this).addClass('active');
+                
+                sortDirection = $(this).data('direction');
+                filterGames();
+            });
+
             $.getJSON("./tags.json")
              .done(steamTags => {
                 allAvailableTags = steamTags;
@@ -1550,38 +1640,20 @@
             $.getJSON("./free_goods_detail.json")
              .done(data => {
                 $('#uptime').text(data.update_time);
+
                 var maxPrice = 0;
                 var maxReviewUsers = 0;
+
                 allGames = data.free_list.map(item => {
-                    const price = item[3].toLowerCase() === 'free' ? 0 : parseFloat(item[3].replace(/[^\d.]/g, '')) || 0;
-                    const tags = item[7].map(id => allAvailableTags[id]);
+                    item.price_numeric = parseFloat(item.price_final.replace(/[^\d.]/g, '')) || 0;
+                    item.base_price_numeric = parseFloat(item.price.replace(/[^\d.]/g, '')) || 0;
+                    item.tags_numeric = item.tags;
+                    item.tags = item.tags_numeric.map(id => allAvailableTags[id]);
 
-                    maxPrice = Math.max(maxPrice, price);
-                    maxReviewUsers = Math.max(maxReviewUsers, item[16][2]);
+                    maxPrice = Math.max(maxPrice, item.price_numeric);
+                    maxReviewUsers = Math.max(maxReviewUsers, item.review_users);
 
-                    return {
-                        id: item[0],
-                        discount: item[1],
-                        originalPrice: item[2],
-                        discountPrice: item[3],
-                        name: item[4],
-                        link: item[5],
-                        image: item[6],
-                        numericPrice: price,
-                        numericTags: item[7],
-                        tags: tags,
-                        is_bundle: item[8],
-                        bundle_data: item[9],
-                        is_soundtrack: item[10],
-                        for_win: item[11],
-                        for_mac: item[12],
-                        for_linux: item[13],
-                        for_vr: item[14],
-                        release: item[15],
-                        review_score: item[16][0],
-                        review_percent: item[16][1],
-                        review_users: item[16][2],
-                    };
+                    return item;
                 });
 
                 initSliders(maxPrice, maxReviewUsers);
