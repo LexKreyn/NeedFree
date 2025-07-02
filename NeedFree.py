@@ -75,7 +75,6 @@ def get_free_goods(start, append_list = False):
             counter = 0
             if append_list:
                 for sub_free in sub_free_list:
-                    print(sub_free)
                     if not sub_free[1]:
                         sub_free[1] = '0'
 
@@ -100,10 +99,6 @@ def get_free_goods(start, append_list = False):
                     else:
                         sub_free[16] = r'None<br>0% of the 0'
 
-                    print(sub_free)
-                    print()
-                    print()
-                    print()
                     counter += 1
                     sub_free[1] = int(sub_free[1])
                     free_list.put(sub_free)
@@ -133,7 +128,6 @@ final_free_list = []
 free_ids = set()
 while not free_list.empty():
     free_item = free_list.get()
-    print(free_item)
 
     game_link = free_item[5]
 
