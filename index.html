@@ -911,6 +911,277 @@
             opacity: 1;
         }
     </style>
+    <style>
+        .magic-button {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 0.5rem 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(37, 117, 252, 0.3);
+        }
+
+        .magic-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(37, 117, 252, 0.5);
+        }
+
+        .magic-button:active {
+            transform: scale(0.95);
+        }
+
+        .magic-modal .modal-dialog {
+            max-width: 700px;
+        }
+
+        .magic-modal .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            border: none;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+        }
+
+        .magic-modal .modal-header {
+            background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+            border-bottom: none;
+            padding: 1rem;
+        }
+
+        .magic-modal .modal-title {
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .magic-modal .modal-body {
+            padding: 1.5rem;
+        }
+
+        .magic-modal .modal-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .magic-card {
+            background: var(--bg-surface);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .magic-card-header {
+            display: flex;
+            padding: 1rem;
+            background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+        }
+
+        .magic-card-image-container {
+            flex-shrink: 0;
+            width: 120px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .magic-card-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .magic-card-discount-container {
+            padding-left: 1rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .magic-card-discount {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .magic-card-price {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 0.3rem;
+        }
+
+        .magic-card-body {
+            padding: 1.2rem;
+        }
+
+        .magic-card-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        .magic-card-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            align-items: center;
+        }
+
+        .magic-card-platform-icons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .magic-card-platform-icon {
+            width: 22px;
+            height: 22px;
+            opacity: 0.9;
+        }
+
+        .magic-card-content-type {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .magic-card-vr-badge {
+            background: rgba(106, 53, 184, 0.4);
+            color: #b39ddb;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .magic-card-details {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .magic-card-section {
+            flex: 1;
+        }
+
+        .magic-card-section-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--accent-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .magic-card-tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .magic-card-tag {
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            background: rgba(33, 150, 243, 0.15);
+            color: var(--accent-secondary);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .feeling-lucky-btn {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            color: #121212;
+            border: none;
+            font-weight: 700;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        /* Адаптация для мобильных */
+        @media (max-width: 768px) {
+            .magic-modal .modal-dialog {
+                margin: 0 auto;
+            }
+            
+            .magic-card-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                padding: 1rem 0.5rem;
+            }
+            
+            .magic-card-image-container {
+                margin-bottom: 0.5rem;
+            }
+            
+            .magic-card-discount-container {
+                padding-left: 0;
+            }
+            
+            .magic-card-name {
+                font-size: 1.2rem;
+            }
+            
+            .magic-card-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .magic-card-details {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+            
+            .magic-modal .modal-footer {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .feeling-lucky-btn {
+                order: -1;
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .magic-card-discount {
+                font-size: 1.3rem;
+            }
+            
+            .magic-card-name {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Google tag (gtag.js) -->
@@ -942,13 +1213,16 @@
     <div class="container">
         <div class="loading">
             <img class="loading-gif" src="loading.gif" />
-            <!-- <span>Loading...</span> -->
         </div>
         <header class="app-header">
             <div class="app-title">
                 <i class="fas fa-tags pulse"></i>
                 <span>Steam Discounts</span>
             </div>
+            <button id="magicButton" class="magic-button">
+                <i class="fas fa-wand-magic-sparkles"></i>
+                <span>Magic</span>
+            </button>
             <div class="total-count">
                 <span id="totalcount">Loading...</span>
             </div>
@@ -1126,11 +1400,37 @@
         </footer>
     </div>
 
+    <div class="modal fade magic-modal" id="magicModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                        <span>Random Discovery</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="magicModalBody">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                    <button type="button" class="feeling-lucky-btn" id="tryAnotherButton">
+                        <i class="fas fa-dice"></i> Feeling Lucky
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        $(window).scrollTop(0);
+
         let allGames = [];
         let discountSlider, priceSlider;
         let filterTimeout;
@@ -1198,7 +1498,7 @@
                 'Negative'
             ];
             
-            return positiveScores.includes(score) ? positive : negativeScores.includes(score) ? negative : mixed;
+            return positiveScores.includes(score) ? positive : (negativeScores.includes(score) ? negative : mixed);
         }
 
         function getReviewColor(score) {
@@ -1229,6 +1529,9 @@
         }
 
         function renderGames(games, page = 1) {
+            $('.loading').fadeIn();
+            $(window).scrollTop(0);
+
             const start = (page - 1) * itemsPerPage;
             const end = start + itemsPerPage;
             const pagedGames = games.slice(start, end);
@@ -1346,6 +1649,8 @@
 
             $('#listcontent').empty().append(fragment);
             $('#totalcount').text(`${pagedGames.length} of ${filteredGames.length}/${allGames.length} (Page ${page}/${Math.ceil(filteredGames.length/itemsPerPage)})`);
+
+            $('.loading').fadeOut();
         }
 
         function updatePagination(totalItems) {
@@ -1714,6 +2019,140 @@
             $('#addTagButton').on('click', showTagModal);
         }
 
+        function getRandomGame() {
+            if (filteredGames.length === 0) {
+                return null;
+            }
+            const randomIndex = Math.floor(Math.random() * filteredGames.length);
+            return filteredGames[randomIndex];
+        }
+
+        function renderGameInModal(game) {
+            if (!game) {
+                return '<div class="text-center py-5"><h4>No games match your filters!</h4><p>Try changing your filters.</p></div>';
+            }
+
+            const discountColor = getColor(game.discount);
+            let bundleGamesHTML = '';
+            
+            if (game.is_bundle && game.bundle_data && game.bundle_data.m_rgItems) {
+                bundleGamesHTML = `
+                    <div class="bundle-games-container">
+                        <div class="bundle-games-title">Includes ${game.bundle_data.m_rgItems.length} games:</div>
+                        <div class="bundle-games">
+                            ${game.bundle_data.m_rgItems.map(item => {
+                                const appID = item.m_rgIncludedAppIDs[0];
+                                const discount = Math.round((1 - item.m_nFinalPriceInCents / item.m_nBasePriceInCents) * 100);
+                                const foundGame = allGames.find(g => g.id === appID);
+                                return foundGame ? `
+                                    <div class="bundle-game">
+                                        <img src="${foundGame.image}" alt="${foundGame.title}">
+                                        <span class="bundle-game-name">${foundGame.title} -${discount}%</span>
+                                    </div>
+                                ` : '';
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="magic-card">
+                    <div class="magic-card-header" style="background: linear-gradient(90deg, ${discountColor} 0%, #1e1e1e 100%)">
+                        <div class="magic-card-image-container">
+                            <img class="magic-card-image" src="${game.image}" alt="${game.title}">
+                        </div>
+                        <div class="magic-card-discount-container">
+                            <div class="magic-card-discount">-${game.discount}%</div>
+                            <div class="magic-card-price">${game.price} → ${game.price_final}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="magic-card-body">
+                        <h2 class="magic-card-name">${game.title}</h2>
+                        
+                        <div class="magic-card-meta">
+                            <div class="magic-card-platform-icons">
+                                ${game.for_win ? '<img src="https://store.fastly.steamstatic.com/public/images/v6/icon_platform_win.png" class="magic-card-platform-icon" title="Windows">' : ''}
+                                ${game.for_mac ? '<img src="https://store.fastly.steamstatic.com/public/images/v6/icon_platform_mac.png" class="magic-card-platform-icon" title="Mac">' : ''}
+                                ${game.for_linux ? '<img src="https://store.fastly.steamstatic.com/public/images/v6/icon_platform_linux.png" class="magic-card-platform-icon" title="Linux">' : ''}
+                            </div>
+                            <div style="display: flex; flex-direction: row; align-items: center; gap: 0.75rem;">
+                                ${game.vr_support ? '<span class="magic-card-vr-badge">VR</span>' : ''}
+                                <div class="magic-card-content-type">
+                                    ${game.is_bundle ? 'Bundle' : game.is_soundtrack ? 'Soundtrack' : 'App'}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="magic-card-details">
+                            <div class="magic-card-section">
+                                <div class="magic-card-section-title">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span>Release Date</span>
+                                </div>
+                                <div>${game.release || 'N/A'}</div>
+                            </div>
+                            
+                            ${game.review_users > 0 ? `
+                            <div class="magic-card-section">
+                                <div class="magic-card-section-title">
+                                    <i class="fas fa-star"></i>
+                                    <span>Reviews</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <img src="${getReviewIcon(game.review_score)}" class="review-icon">
+                                    <span style="color: ${getReviewColor(game.review_score)};">
+                                        ${game.review_percent}% (${game.review_users})
+                                    </span>
+                                </div>
+                                <div class="progress mt-2" style="height: 8px; background: rgba(255,255,255,0.1)">
+                                    <div class="progress-bar" role="progressbar" 
+                                         style="width: ${game.review_percent}%; background: ${getReviewColor(game.review_score)}">
+                                    </div>
+                                </div>
+                            </div>
+                            ` : ''}
+                        </div>
+                        
+                        ${game.tags && game.tags.length > 0 ? `
+                            <div class="magic-card-section">
+                                <div class="magic-card-section-title">
+                                    <i class="fas fa-tags"></i>
+                                    <span>Tags</span>
+                                </div>
+                                <div class="magic-card-tags-container">
+                                    ${game.tags.map(tag => `<span class="magic-card-tag">${tag}</span>`).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${bundleGamesHTML}
+                        
+                        <div class="mt-4 text-center">
+                            <a href="${game.link}" class="btn btn-primary btn-lg" target="_blank" style="padding: 0.75rem 2rem;">
+                                <i class="fas fa-external-link-alt"></i> View on Steam
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showRandomGameModal() {
+            const randomGame = getRandomGame();
+            const modalBody = $('#magicModalBody');
+            
+            if (!randomGame) {
+                modalBody.html('<div class="text-center py-5"><h4>No games match your filters!</h4><p>Try changing your filters.</p></div>');
+            } else {
+                modalBody.html(renderGameInModal(randomGame));
+            }
+            
+            const magicModal = new bootstrap.Modal(document.getElementById('magicModal'));
+            magicModal.show();
+        }
+
         $(document).ready(() => {
             $('#winFilter').change(function() {
                 platformFilters.win = $(this).is(':checked');
@@ -1763,6 +2202,23 @@
                 filterGames();
             });
 
+            $('#magicButton').click(showRandomGameModal);
+
+            $('#tryAnotherButton').click(function() {
+                $('#tryAnotherButton').parent().parent().parent().parent().scrollTop(0);
+                const randomGame = getRandomGame();
+                if (randomGame) {
+                    $('#magicModalBody').html(renderGameInModal(randomGame));
+                }
+            });
+
+            $('#magicModal').on('click', function(e) {
+                if ($(e.target).is('#magicModal')) {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('magicModal'));
+                    modal.hide();
+                }
+            });
+
             $.getJSON("./tags.json")
              .done(steamTags => {
                 allAvailableTags = steamTags;
@@ -1792,7 +2248,6 @@
                 filterGames();
                 $('#nameFilter').on('input', debouncedFilter);
 
-                window.scrollTo(0, 0);
                 $('.loading').fadeOut();
                 $(document.body).css('overflow', 'auto');
             })
