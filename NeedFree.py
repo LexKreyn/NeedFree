@@ -10,7 +10,7 @@ import bs4
 import re
 
 
-API_URL_TEMPLATE = "https://store.steampowered.com/search/results/?query&start={pos}&count=100&hidef2p=1&infinite=1"
+API_URL_TEMPLATE = "https://store.steampowered.com/search/results/?query&start={pos}&count=100&hidef2p=1&infinite=1&ndl=1"
 THREAD_CNT = 8
 
 free_list = queue.Queue()
