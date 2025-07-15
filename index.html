@@ -2248,7 +2248,7 @@
                 filterGames();
                 $('#nameFilter').on('input', debouncedFilter);
 
-                $('.loading').fadeOut();
+                // $('.loading').fadeOut();
                 $(document.body).css('overflow', 'auto');
             })
             .fail(() => console.error('Error loading games data'));
