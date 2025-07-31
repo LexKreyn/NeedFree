@@ -162,8 +162,8 @@ while not free_list.empty():
     final_free_list.append(free_item)
 
 today = datetime.datetime.now(tz=pytz.timezone("Europe/Moscow"))
-final_free_list_part1 = final_free_list[:len(final_free_list)]
-final_free_list_part2 = final_free_list[len(final_free_list):]
+final_free_list_part1 = final_free_list[:len(final_free_list)//2]
+final_free_list_part2 = final_free_list[len(final_free_list)//2:]
 
 with open("free_goods_detail_part1.json", "w", encoding="utf-8") as fp:
     json.dump({
