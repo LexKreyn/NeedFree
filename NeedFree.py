@@ -161,9 +161,20 @@ while not free_list.empty():
     free_ids.add(game_id)
     final_free_list.append(free_item)
 
-with open("free_goods_detail.json", "w", encoding="utf-8") as fp:
+today = datetime.datetime.now(tz=pytz.timezone("Europe/Moscow"))
+final_free_list_part1 = final_free_list[:len(final_free_list)]
+final_free_list_part2 = final_free_list[len(final_free_list):]
+
+with open("free_goods_detail_part1.json", "w", encoding="utf-8") as fp:
     json.dump({
-        "total_count": len(final_free_list),
-        "free_list": final_free_list,
-        "update_time": datetime.datetime.now(tz=pytz.timezone("Europe/Moscow")).strftime('%Y-%m-%d %H:%M:%S')
+        "total_count": len(final_free_list_part1),
+        "free_list": final_free_list_part1,
+        "update_time": today.strftime('%Y-%m-%d %H:%M:%S')
+    }, fp)
+
+with open("free_goods_detail_part2.json", "w", encoding="utf-8") as fp:
+    json.dump({
+        "total_count": len(final_free_list_part2),
+        "free_list": final_free_list_part2,
+        "update_time": today.strftime('%Y-%m-%d %H:%M:%S')
     }, fp)
