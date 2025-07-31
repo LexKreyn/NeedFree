@@ -1556,7 +1556,7 @@
 
                                     const foundGame = allGames.find(game => game.id === appID);
 
-                                    if (foundGame === undefined) { return ``; }
+                                    if (foundGame === undefined) { return ''; }
                                     return `
                                         <div class="bundle-game">
                                             <img src="${foundGame.image}" alt="${foundGame.title}">
@@ -1631,7 +1631,7 @@
 
                                     let tagClass = 'game-tag';
                                     if (selectedTags.length > 0) {
-                                        tagClass = isSelected ? 'game-tag game-tag-selected' : 'game-tag game-tag-not-selected';
+                                        tagClass = 'game-tag ' + (isSelected ? 'game-tag-selected' : 'game-tag-not-selected');
                                     }
 
                                     return `<span class="${tagClass}">${tag}</span>`;
@@ -1639,7 +1639,27 @@
                             </div>
                         ` : ''}
 
-                        ${bundleGamesHTML}
+                        ${game.is_bundle && game.bundle_data && game.bundle_data.m_rgItems ? `
+                            <div class="bundle-games-container">
+                                <div class="bundle-games-title">Includes ${game.bundle_data.m_rgItems.length} games:</div>
+                                <div class="bundle-games">
+                                    ${game.bundle_data.m_rgItems.map(item => {
+                                        const appID = item.m_rgIncludedAppIDs[0];
+                                        const discount = Math.round((1 - item.m_nFinalPriceInCents / item.m_nBasePriceInCents) * 100);
+
+                                        const foundGame = allGames.find(game => game.id === appID);
+
+                                        if (foundGame === undefined) { return ''; }
+                                        return `
+                                            <div class="bundle-game">
+                                                <img src="${foundGame.image}" alt="${foundGame.title}">
+                                                <span class="bundle-game-name">${foundGame.title} -${discount}%</span>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
                     </div>
                     <a href="${game.link}" class="stretched-link" target="_blank"></a>
                 `;
@@ -2225,8 +2245,24 @@
             })
              .fail(() => console.error('Error loading tags data')); 
 
-            $.getJSON("./free_goods_detail.json")
+            var part1 = null;
+            $.getJSON("./free_goods_detail_part1.json")
              .done(data => {
+                part1 = data;
+            })
+             .fail(() => console.error('Error loading games data'));
+
+            var part2 = null;
+            $.getJSON("./free_goods_detail_part2.json")
+             .done(data => {
+                part2 = data;
+            })
+             .fail(() => console.error('Error loading games data'));
+
+            if ((part1 !== null) && (part2 !== null)) {
+                data = part1;
+                data['free_list'] += part2['free_list'];
+
                 $('#uptime').text(data.update_time);
 
                 var maxPrice = 0;
@@ -2248,10 +2284,11 @@
                 filterGames();
                 $('#nameFilter').on('input', debouncedFilter);
 
-                // $('.loading').fadeOut();
                 $(document.body).css('overflow', 'auto');
-            })
-            .fail(() => console.error('Error loading games data'));
+            }
+            else {
+                console.error('Error loading games data');
+            }
         });
     </script>
 </body>
