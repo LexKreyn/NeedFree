@@ -1670,7 +1670,13 @@
             $('#listcontent').empty().append(fragment);
             $('#totalcount').text(`${pagedGames.length} of ${filteredGames.length}/${allGames.length} (Page ${page}/${Math.ceil(filteredGames.length/itemsPerPage)})`);
 
-            $('.loading').fadeOut();
+            if ($('.loading').is(':visible')) {
+                // console.trace('fadeout');
+                // $('.loading').fadeOut();
+                $(".loading").css({ opacity: 1 }).fadeTo(500, 0, function() {
+                    $(this).hide();
+                });
+            }
         }
 
         function updatePagination(totalItems) {
@@ -2245,23 +2251,31 @@
             })
              .fail(() => console.error('Error loading tags data')); 
 
+            $.ajaxSetup({
+                async: false
+            });
+
             var part1 = null;
             $.getJSON("./free_goods_detail_part1.json")
              .done(data => {
                 part1 = data;
             })
-             .fail(() => console.error('Error loading games data'));
+             .fail(() => console.error('Error loading games data part1'));
 
             var part2 = null;
             $.getJSON("./free_goods_detail_part2.json")
              .done(data => {
                 part2 = data;
             })
-             .fail(() => console.error('Error loading games data'));
+             .fail(() => console.error('Error loading games data part2'));
+
+            $.ajaxSetup({
+                async: true
+            });
 
             if ((part1 !== null) && (part2 !== null)) {
                 data = part1;
-                data['free_list'] += part2['free_list'];
+                data.free_list = part1.free_list.concat(part2.free_list);
 
                 $('#uptime').text(data.update_time);
 
