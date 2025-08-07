@@ -2245,15 +2245,15 @@
                 }
             });
 
+            $.ajaxSetup({
+                async: false
+            });
+            
             $.getJSON("./tags.json")
              .done(steamTags => {
                 allAvailableTags = steamTags;
             })
              .fail(() => console.error('Error loading tags data')); 
-
-            $.ajaxSetup({
-                async: false
-            });
 
             var part1 = null;
             $.getJSON("./free_goods_detail_part1.json")
